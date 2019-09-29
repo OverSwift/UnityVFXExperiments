@@ -556,7 +556,7 @@ MonoBehaviour:
   m_InputSlots: []
   m_OutputSlots: []
   m_Disabled: 0
-  mode: 0
+  mode: 6
 --- !u!114 &114596491906001080
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -915,10 +915,8 @@ VisualEffectResource:
       1\n#define VFX_USE_SIZE_CURRENT 1\n#define VFX_USE_AGE_CURRENT 1\n#define VFX_USE_ALIVE_CURRENT
       1\n#define VFX_USE_ANGLEX_CURRENT 1\n#define VFX_USE_ANGLEY_CURRENT 1\n#define
       VFX_USE_ANGLEZ_CURRENT 1\n#define VFX_LOCAL_SPACE 1\n#include \"Packages/com.unity.visualeffectgraph/Shaders/RenderPipeline/LWRP/VFXDefines.hlsl\"\n\n\nCBUFFER_START(parameters)\n
-      \   float3 A_a;\n    float A_b;\n    float3 B_a;\n    float B_b;\n    float3
-      Box_center_c;\n    float A_e;\n    float3 Box_size_c;\n    float B_e;\n    float3
-      A_d;\n    uint PADDING_0;\n    float3 B_d;\n    uint PADDING_1;\nCBUFFER_END\n\n\n#include
-      \"Packages/com.unity.visualeffectgraph/Shaders/Common/VFXCommonCompute.cginc\"\n#include
+      \   float3 Box_center_c;\n    uint PADDING_0;\n    float3 Box_size_c;\n    uint
+      PADDING_1;\nCBUFFER_END\n\n\n#include \"Packages/com.unity.visualeffectgraph/Shaders/Common/VFXCommonCompute.cginc\"\n#include
       \"Packages/com.unity.visualeffectgraph/Shaders/VFXCommon.cginc\"\n\n\n\nRWByteAddressBuffer
       attributeBuffer;\nByteAddressBuffer sourceAttributeBuffer;\n\nCBUFFER_START(initParams)\n#if
       !VFX_USE_SPAWNER_FROM_GPU\n    uint nbSpawned;\t\t\t\t\t// Numbers of particle
@@ -968,41 +966,43 @@ VisualEffectResource:
       \       bool alive = (bool)true;\n        float angleX = (float)0;\n        float
       angleY = (float)0;\n        float angleZ = (float)0;\n        \n\n#if VFX_USE_PARTICLEID_CURRENT\n
       \        particleId = particleIndex;\n#endif\n#if VFX_USE_SEED_CURRENT\n        seed
-      = WangHash(particleIndex ^ systemSeed);\n#endif\n        \n        SetAttribute_E6295C0(
-      /*inout */velocity,  /*inout */seed, A_a, B_a);\n        SetAttribute_F01429A3(
-      /*inout */lifetime,  /*inout */seed, A_b, B_b);\n        PositionAABox_18D(
-      /*inout */position,  /*inout */seed, Box_center_c, Box_size_c);\n        SetAttribute_F6DAC92F(
+      = WangHash(particleIndex ^ systemSeed);\n#endif\n        \n        {\n            SetAttribute_E6295C0(
+      /*inout */velocity,  /*inout */seed, float3(-3,0,3), float3(3,0,5));\n        }\n
+      \       {\n            SetAttribute_F01429A3( /*inout */lifetime,  /*inout */seed,
+      (float)3, (float)5);\n        }\n        PositionAABox_18D( /*inout */position,
+      \ /*inout */seed, Box_center_c, Box_size_c);\n        {\n            SetAttribute_F6DAC92F(
       /*inout */angularVelocityX,  /*inout */angularVelocityY,  /*inout */angularVelocityZ,
-      \ /*inout */seed, A_d, B_d);\n        SetAttribute_2EBDF2A7( /*inout */size,
-      \ /*inout */seed, A_e, B_e);\n        \n\n\n#if VFX_USE_ALIVE_CURRENT\n        if
-      (alive)\n        {\n\t\t\tuint deadIndex = deadListIn.DecrementCounter();\n
-      \           uint index = deadListIn[deadIndex];\n            attributeBuffer.Store3((index
-      * 0x4 + 0x0) << 2,asuint(velocity));\n            attributeBuffer.Store((index
-      * 0x4 + 0x3) << 2,asuint(seed));\n            attributeBuffer.Store((index *
-      0x2 + 0x13900) << 2,asuint(lifetime));\n            attributeBuffer.Store3((index
-      * 0x4 + 0x1D580) << 2,asuint(position));\n            attributeBuffer.Store((index
-      * 0x3 + 0x30E80) << 2,asuint(angularVelocityX));\n            attributeBuffer.Store((index
-      * 0x3 + 0x30E81) << 2,asuint(angularVelocityY));\n            attributeBuffer.Store((index
-      * 0x3 + 0x30E82) << 2,asuint(angularVelocityZ));\n            attributeBuffer.Store((index
-      * 0x2 + 0x13901) << 2,asuint(size));\n            attributeBuffer.Store((index
-      * 0x5 + 0x3F940) << 2,asuint(age));\n            attributeBuffer.Store((index
-      * 0x5 + 0x3F941) << 2,uint(alive));\n            attributeBuffer.Store((index
-      * 0x5 + 0x3F942) << 2,asuint(angleX));\n            attributeBuffer.Store((index
-      * 0x5 + 0x3F943) << 2,asuint(angleY));\n            attributeBuffer.Store((index
-      * 0x5 + 0x3F944) << 2,asuint(angleZ));\n            \n\n        }\n#else\n        uint
-      index = particleIndex;\n        attributeBuffer.Store3((index * 0x4 + 0x0) <<
-      2,asuint(velocity));\n        attributeBuffer.Store((index * 0x4 + 0x3) << 2,asuint(seed));\n
-      \       attributeBuffer.Store((index * 0x2 + 0x13900) << 2,asuint(lifetime));\n
-      \       attributeBuffer.Store3((index * 0x4 + 0x1D580) << 2,asuint(position));\n
-      \       attributeBuffer.Store((index * 0x3 + 0x30E80) << 2,asuint(angularVelocityX));\n
-      \       attributeBuffer.Store((index * 0x3 + 0x30E81) << 2,asuint(angularVelocityY));\n
-      \       attributeBuffer.Store((index * 0x3 + 0x30E82) << 2,asuint(angularVelocityZ));\n
-      \       attributeBuffer.Store((index * 0x2 + 0x13901) << 2,asuint(size));\n
-      \       attributeBuffer.Store((index * 0x5 + 0x3F940) << 2,asuint(age));\n        attributeBuffer.Store((index
-      * 0x5 + 0x3F941) << 2,uint(alive));\n        attributeBuffer.Store((index *
-      0x5 + 0x3F942) << 2,asuint(angleX));\n        attributeBuffer.Store((index *
-      0x5 + 0x3F943) << 2,asuint(angleY));\n        attributeBuffer.Store((index *
-      0x5 + 0x3F944) << 2,asuint(angleZ));\n        \n\n#endif\n    }\n}\n"
+      \ /*inout */seed, float3(0,0,0), float3(0,0,0));\n        }\n        {\n            SetAttribute_2EBDF2A7(
+      /*inout */size,  /*inout */seed, (float)2, (float)5);\n        }\n        \n\n\n#if
+      VFX_USE_ALIVE_CURRENT\n        if (alive)\n        {\n\t\t\tuint deadIndex =
+      deadListIn.DecrementCounter();\n            uint index = deadListIn[deadIndex];\n
+      \           attributeBuffer.Store3((index * 0x8 + 0x0) << 2,asuint(velocity));\n
+      \           attributeBuffer.Store((index * 0x1 + 0x27200) << 2,asuint(seed));\n
+      \           attributeBuffer.Store((index * 0x2 + 0x2C040) << 2,asuint(lifetime));\n
+      \           attributeBuffer.Store3((index * 0x4 + 0x35CC0) << 2,asuint(position));\n
+      \           attributeBuffer.Store((index * 0x3 + 0x495C0) << 2,asuint(angularVelocityX));\n
+      \           attributeBuffer.Store((index * 0x3 + 0x495C1) << 2,asuint(angularVelocityY));\n
+      \           attributeBuffer.Store((index * 0x3 + 0x495C2) << 2,asuint(angularVelocityZ));\n
+      \           attributeBuffer.Store((index * 0x2 + 0x2C041) << 2,asuint(size));\n
+      \           attributeBuffer.Store((index * 0x8 + 0x3) << 2,asuint(age));\n            attributeBuffer.Store((index
+      * 0x8 + 0x4) << 2,uint(alive));\n            attributeBuffer.Store((index *
+      0x8 + 0x5) << 2,asuint(angleX));\n            attributeBuffer.Store((index *
+      0x8 + 0x6) << 2,asuint(angleY));\n            attributeBuffer.Store((index *
+      0x8 + 0x7) << 2,asuint(angleZ));\n            \n\n        }\n#else\n        uint
+      index = particleIndex;\n        attributeBuffer.Store3((index * 0x8 + 0x0) <<
+      2,asuint(velocity));\n        attributeBuffer.Store((index * 0x1 + 0x27200)
+      << 2,asuint(seed));\n        attributeBuffer.Store((index * 0x2 + 0x2C040) <<
+      2,asuint(lifetime));\n        attributeBuffer.Store3((index * 0x4 + 0x35CC0)
+      << 2,asuint(position));\n        attributeBuffer.Store((index * 0x3 + 0x495C0)
+      << 2,asuint(angularVelocityX));\n        attributeBuffer.Store((index * 0x3
+      + 0x495C1) << 2,asuint(angularVelocityY));\n        attributeBuffer.Store((index
+      * 0x3 + 0x495C2) << 2,asuint(angularVelocityZ));\n        attributeBuffer.Store((index
+      * 0x2 + 0x2C041) << 2,asuint(size));\n        attributeBuffer.Store((index *
+      0x8 + 0x3) << 2,asuint(age));\n        attributeBuffer.Store((index * 0x8 +
+      0x4) << 2,uint(alive));\n        attributeBuffer.Store((index * 0x8 + 0x5) <<
+      2,asuint(angleX));\n        attributeBuffer.Store((index * 0x8 + 0x6) << 2,asuint(angleY));\n
+      \       attributeBuffer.Store((index * 0x8 + 0x7) << 2,asuint(angleZ));\n        \n\n#endif\n
+      \   }\n}\n"
   - compute: 1
     name: '[System 1]Update'
     source: "#pragma kernel CSMain\n#define NB_THREADS_PER_GROUP 64\n#define VFX_USE_VELOCITY_CURRENT
@@ -1014,13 +1014,9 @@ VisualEffectResource:
       VFX_USE_ALIVE_CURRENT 1\n#define VFX_USE_ANGLEX_CURRENT 1\n#define VFX_USE_ANGLEY_CURRENT
       1\n#define VFX_USE_ANGLEZ_CURRENT 1\n#define VFX_HAS_INDIRECT_DRAW 1\n#define
       VFX_LOCAL_SPACE 1\n#include \"Packages/com.unity.visualeffectgraph/Shaders/RenderPipeline/LWRP/VFXDefines.hlsl\"\n\n\nCBUFFER_START(parameters)\n
-      \   float3 Force_a;\n    float deltaTime_a;\n    float3 box_center_b;\n    float
-      Elasticity_b;\n    float3 box_size_b;\n    float Friction_b;\n    float3 box_center_c;\n
-      \   float LifetimeLoss_b;\n    float3 box_size_c;\n    float Roughness_b;\n
-      \   float3 Sphere_center_d;\n    float Elasticity_c;\n    float Friction_c;\n
-      \   float LifetimeLoss_c;\n    float Sphere_radius_d;\n    float Elasticity_d;\n
-      \   float Friction_d;\n    float LifetimeLoss_d;\n    uint2 PADDING_0;\nCBUFFER_END\n\n\n#include
-      \"Packages/com.unity.visualeffectgraph/Shaders/Common/VFXCommonCompute.cginc\"\n#include
+      \   float3 box_center_b;\n    float deltaTime_a;\n    float3 box_size_b;\n    uint
+      PADDING_0;\n    float3 box_center_c;\n    uint PADDING_1;\n    float3 box_size_c;\n
+      \   uint PADDING_2;\nCBUFFER_END\n\n\n#include \"Packages/com.unity.visualeffectgraph/Shaders/Common/VFXCommonCompute.cginc\"\n#include
       \"Packages/com.unity.visualeffectgraph/Shaders/VFXCommon.cginc\"\n\n\n\nRWByteAddressBuffer
       attributeBuffer;\n\n#if VFX_USE_ALIVE_CURRENT\nRWStructuredBuffer<uint> deadListOut;\n#endif\n\n#if
       VFX_HAS_INDIRECT_DRAW\nRWStructuredBuffer<uint> indirectBuffer;\n#endif\n\nCBUFFER_START(updateParams)\n
@@ -1093,83 +1089,83 @@ VisualEffectResource:
       \   : SV_GroupThreadID)\n{\n\tuint id = groupThreadId.x + groupId.x * NB_THREADS_PER_GROUP
       + groupId.y * dispatchWidth * NB_THREADS_PER_GROUP;\n\tuint index = id;\n\tif
       (id < nbMax)\n\t{\n#if VFX_USE_ALIVE_CURRENT\n\t\tbool alive = (attributeBuffer.Load((index
-      * 0x5 + 0x3F941) << 2));\n\t\t\n\n\t\tif (alive)\n\t\t{\n\t\t\tfloat3 velocity
-      = asfloat(attributeBuffer.Load3((index * 0x4 + 0x0) << 2));\n\t\t\tuint seed
-      = (attributeBuffer.Load((index * 0x4 + 0x3) << 2));\n\t\t\tfloat lifetime =
-      asfloat(attributeBuffer.Load((index * 0x2 + 0x13900) << 2));\n\t\t\tfloat3 position
-      = asfloat(attributeBuffer.Load3((index * 0x4 + 0x1D580) << 2));\n\t\t\tfloat
-      angularVelocityX = asfloat(attributeBuffer.Load((index * 0x3 + 0x30E80) << 2));\n\t\t\tfloat
-      angularVelocityY = asfloat(attributeBuffer.Load((index * 0x3 + 0x30E81) << 2));\n\t\t\tfloat
-      angularVelocityZ = asfloat(attributeBuffer.Load((index * 0x3 + 0x30E82) << 2));\n\t\t\tfloat
-      size = asfloat(attributeBuffer.Load((index * 0x2 + 0x13901) << 2));\n\t\t\tfloat
-      age = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F940) << 2));\n\t\t\tfloat
+      * 0x8 + 0x4) << 2));\n\t\t\n\n\t\tif (alive)\n\t\t{\n\t\t\tfloat3 velocity =
+      asfloat(attributeBuffer.Load3((index * 0x8 + 0x0) << 2));\n\t\t\tuint seed =
+      (attributeBuffer.Load((index * 0x1 + 0x27200) << 2));\n\t\t\tfloat lifetime
+      = asfloat(attributeBuffer.Load((index * 0x2 + 0x2C040) << 2));\n\t\t\tfloat3
+      position = asfloat(attributeBuffer.Load3((index * 0x4 + 0x35CC0) << 2));\n\t\t\tfloat
+      angularVelocityX = asfloat(attributeBuffer.Load((index * 0x3 + 0x495C0) << 2));\n\t\t\tfloat
+      angularVelocityY = asfloat(attributeBuffer.Load((index * 0x3 + 0x495C1) << 2));\n\t\t\tfloat
+      angularVelocityZ = asfloat(attributeBuffer.Load((index * 0x3 + 0x495C2) << 2));\n\t\t\tfloat
+      size = asfloat(attributeBuffer.Load((index * 0x2 + 0x2C041) << 2));\n\t\t\tfloat
+      age = asfloat(attributeBuffer.Load((index * 0x8 + 0x3) << 2));\n\t\t\tfloat
       scaleZ = (float)1;\n\t\t\tfloat scaleY = (float)1;\n\t\t\tfloat scaleX = (float)1;\n\t\t\tfloat
-      angleX = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F942) << 2));\n\t\t\tfloat
-      angleY = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F943) << 2));\n\t\t\tfloat
-      angleZ = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F944) << 2));\n\t\t\t\n\n\t\t\t\n#if
-      VFX_USE_OLDPOSITION_CURRENT\n\t\t\toldPosition = position;\n#endif\n\t\t\t\n\t\t\tGravity(
-      /*inout */velocity, Force_a, deltaTime_a);\n\t\t\t{\n\t\t\t    float tmp_br
-      = max(scaleY, scaleX);\n\t\t\t    float tmp_bs = max(scaleZ, tmp_br);\n\t\t\t
-      \   float tmp_bt = tmp_bs * size;\n\t\t\t    float tmp_bv = tmp_bt * (float)0.5;\n\t\t\t
-      \   CollisionAABox_18C( /*inout */position,  /*inout */velocity,  /*inout */age,
-      lifetime,  /*inout */seed, box_center_b, box_size_b, Elasticity_b, Friction_b,
-      LifetimeLoss_b, Roughness_b, deltaTime_a, (float)1, tmp_bv);\n\t\t\t}\n\t\t\t{\n\t\t\t
+      angleX = asfloat(attributeBuffer.Load((index * 0x8 + 0x5) << 2));\n\t\t\tfloat
+      angleY = asfloat(attributeBuffer.Load((index * 0x8 + 0x6) << 2));\n\t\t\tfloat
+      angleZ = asfloat(attributeBuffer.Load((index * 0x8 + 0x7) << 2));\n\t\t\t\n\n\t\t\t\n#if
+      VFX_USE_OLDPOSITION_CURRENT\n\t\t\toldPosition = position;\n#endif\n\t\t\t\n\t\t\t{\n\t\t\t
+      \   Gravity( /*inout */velocity, float3(0,-9.81,0), deltaTime_a);\n\t\t\t}\n\t\t\t{\n\t\t\t
+      \   float tmp_bi = max(scaleY, scaleX);\n\t\t\t    float tmp_bj = max(scaleZ,
+      tmp_bi);\n\t\t\t    float tmp_bk = tmp_bj * size;\n\t\t\t    float tmp_bm =
+      tmp_bk * (float)0.5;\n\t\t\t    CollisionAABox_18C( /*inout */position,  /*inout
+      */velocity,  /*inout */age, lifetime,  /*inout */seed, box_center_b, box_size_b,
+      (float)0.1, (float)0.01, (float)0.05, (float)0.15, deltaTime_a, (float)1, tmp_bm);\n\t\t\t}\n\t\t\t{\n\t\t\t
       \   CollisionAABox_0( /*inout */position,  /*inout */velocity,  /*inout */age,
-      lifetime, box_center_c, box_size_c, Elasticity_c, Friction_c, LifetimeLoss_c,
-      deltaTime_a, (float)1, (float)0);\n\t\t\t}\n\t\t\t{\n\t\t\t    CollisionSphere_0(
-      /*inout */position,  /*inout */velocity,  /*inout */age, lifetime, Sphere_center_d,
-      Sphere_radius_d, Elasticity_d, Friction_d, LifetimeLoss_d, deltaTime_a, (float)1,
-      (float)0);\n\t\t\t}\n\t\t\tEulerIntegration( /*inout */position, velocity, deltaTime_a);\n\t\t\tAngularEulerIntegration(
+      lifetime, box_center_c, box_size_c, (float)0.1, (float)0, (float)0, deltaTime_a,
+      (float)1, (float)0);\n\t\t\t}\n\t\t\t{\n\t\t\t    CollisionSphere_0( /*inout
+      */position,  /*inout */velocity,  /*inout */age, lifetime, float3(8.454927,-12.62524,6.134962),
+      (float)5, (float)0.1, (float)0, (float)0, deltaTime_a, (float)1, (float)0);\n\t\t\t}\n\t\t\tEulerIntegration(
+      /*inout */position, velocity, deltaTime_a);\n\t\t\tAngularEulerIntegration(
       /*inout */angleX, angularVelocityX,  /*inout */angleY, angularVelocityY,  /*inout
       */angleZ, angularVelocityZ, deltaTime_a);\n\t\t\tAge( /*inout */age, deltaTime_a);\n\t\t\tReap(age,
       lifetime,  /*inout */alive);\n\t\t\t\n\n\t\t\tif (alive)\n\t\t\t{\n\t\t\t\tattributeBuffer.Store3((index
-      * 0x4 + 0x0) << 2,asuint(velocity));\n\t\t\t\tattributeBuffer.Store((index *
-      0x4 + 0x3) << 2,asuint(seed));\n\t\t\t\tattributeBuffer.Store3((index * 0x4
-      + 0x1D580) << 2,asuint(position));\n\t\t\t\tattributeBuffer.Store((index * 0x5
-      + 0x3F940) << 2,asuint(age));\n\t\t\t\tattributeBuffer.Store((index * 0x5 +
-      0x3F942) << 2,asuint(angleX));\n\t\t\t\tattributeBuffer.Store((index * 0x5 +
-      0x3F943) << 2,asuint(angleY));\n\t\t\t\tattributeBuffer.Store((index * 0x5 +
-      0x3F944) << 2,asuint(angleZ));\n\t\t\t\t\n\n#if VFX_HAS_INDIRECT_DRAW\n                uint
+      * 0x8 + 0x0) << 2,asuint(velocity));\n\t\t\t\tattributeBuffer.Store((index *
+      0x1 + 0x27200) << 2,asuint(seed));\n\t\t\t\tattributeBuffer.Store3((index *
+      0x4 + 0x35CC0) << 2,asuint(position));\n\t\t\t\tattributeBuffer.Store((index
+      * 0x8 + 0x3) << 2,asuint(age));\n\t\t\t\tattributeBuffer.Store((index * 0x8
+      + 0x5) << 2,asuint(angleX));\n\t\t\t\tattributeBuffer.Store((index * 0x8 + 0x6)
+      << 2,asuint(angleY));\n\t\t\t\tattributeBuffer.Store((index * 0x8 + 0x7) <<
+      2,asuint(angleZ));\n\t\t\t\t\n\n#if VFX_HAS_INDIRECT_DRAW\n                uint
       indirectIndex = indirectBuffer.IncrementCounter();\n\t\t\t\tindirectBuffer[indirectIndex]
       = index;\n#endif\n\t\t\t}\n\t\t\telse\n\t\t\t{\n\t\t\t\tattributeBuffer.Store((index
-      * 0x5 + 0x3F941) << 2,uint(alive));\n\t\t\t\t\n\n\t\t\t\tuint deadIndex = deadListOut.IncrementCounter();\n\t\t\t\tdeadListOut[deadIndex]
+      * 0x8 + 0x4) << 2,uint(alive));\n\t\t\t\t\n\n\t\t\t\tuint deadIndex = deadListOut.IncrementCounter();\n\t\t\t\tdeadListOut[deadIndex]
       = index;\n\t\t\t}\n\t\t}\n#else\n\t\tfloat3 velocity = asfloat(attributeBuffer.Load3((index
-      * 0x4 + 0x0) << 2));\n\t\tuint seed = (attributeBuffer.Load((index * 0x4 + 0x3)
-      << 2));\n\t\tfloat lifetime = asfloat(attributeBuffer.Load((index * 0x2 + 0x13900)
+      * 0x8 + 0x0) << 2));\n\t\tuint seed = (attributeBuffer.Load((index * 0x1 + 0x27200)
+      << 2));\n\t\tfloat lifetime = asfloat(attributeBuffer.Load((index * 0x2 + 0x2C040)
       << 2));\n\t\tfloat3 position = asfloat(attributeBuffer.Load3((index * 0x4 +
-      0x1D580) << 2));\n\t\tfloat angularVelocityX = asfloat(attributeBuffer.Load((index
-      * 0x3 + 0x30E80) << 2));\n\t\tfloat angularVelocityY = asfloat(attributeBuffer.Load((index
-      * 0x3 + 0x30E81) << 2));\n\t\tfloat angularVelocityZ = asfloat(attributeBuffer.Load((index
-      * 0x3 + 0x30E82) << 2));\n\t\tfloat size = asfloat(attributeBuffer.Load((index
-      * 0x2 + 0x13901) << 2));\n\t\tfloat age = asfloat(attributeBuffer.Load((index
-      * 0x5 + 0x3F940) << 2));\n\t\tfloat scaleZ = (float)1;\n\t\tfloat scaleY = (float)1;\n\t\tfloat
-      scaleX = (float)1;\n\t\tbool alive = (attributeBuffer.Load((index * 0x5 + 0x3F941)
-      << 2));\n\t\tfloat angleX = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F942)
-      << 2));\n\t\tfloat angleY = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F943)
-      << 2));\n\t\tfloat angleZ = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F944)
-      << 2));\n\t\t\n\n\t\t\n#if VFX_USE_OLDPOSITION_CURRENT\n\t\toldPosition = position;\n#endif\n\t\t\n\t\tGravity(
-      /*inout */velocity, Force_a, deltaTime_a);\n\t\t{\n\t\t    float tmp_br = max(scaleY,
-      scaleX);\n\t\t    float tmp_bs = max(scaleZ, tmp_br);\n\t\t    float tmp_bt
-      = tmp_bs * size;\n\t\t    float tmp_bv = tmp_bt * (float)0.5;\n\t\t    CollisionAABox_18C(
-      /*inout */position,  /*inout */velocity,  /*inout */age, lifetime,  /*inout
-      */seed, box_center_b, box_size_b, Elasticity_b, Friction_b, LifetimeLoss_b,
-      Roughness_b, deltaTime_a, (float)1, tmp_bv);\n\t\t}\n\t\t{\n\t\t    CollisionAABox_0(
-      /*inout */position,  /*inout */velocity,  /*inout */age, lifetime, box_center_c,
-      box_size_c, Elasticity_c, Friction_c, LifetimeLoss_c, deltaTime_a, (float)1,
-      (float)0);\n\t\t}\n\t\t{\n\t\t    CollisionSphere_0( /*inout */position,  /*inout
-      */velocity,  /*inout */age, lifetime, Sphere_center_d, Sphere_radius_d, Elasticity_d,
-      Friction_d, LifetimeLoss_d, deltaTime_a, (float)1, (float)0);\n\t\t}\n\t\tEulerIntegration(
+      0x35CC0) << 2));\n\t\tfloat angularVelocityX = asfloat(attributeBuffer.Load((index
+      * 0x3 + 0x495C0) << 2));\n\t\tfloat angularVelocityY = asfloat(attributeBuffer.Load((index
+      * 0x3 + 0x495C1) << 2));\n\t\tfloat angularVelocityZ = asfloat(attributeBuffer.Load((index
+      * 0x3 + 0x495C2) << 2));\n\t\tfloat size = asfloat(attributeBuffer.Load((index
+      * 0x2 + 0x2C041) << 2));\n\t\tfloat age = asfloat(attributeBuffer.Load((index
+      * 0x8 + 0x3) << 2));\n\t\tfloat scaleZ = (float)1;\n\t\tfloat scaleY = (float)1;\n\t\tfloat
+      scaleX = (float)1;\n\t\tbool alive = (attributeBuffer.Load((index * 0x8 + 0x4)
+      << 2));\n\t\tfloat angleX = asfloat(attributeBuffer.Load((index * 0x8 + 0x5)
+      << 2));\n\t\tfloat angleY = asfloat(attributeBuffer.Load((index * 0x8 + 0x6)
+      << 2));\n\t\tfloat angleZ = asfloat(attributeBuffer.Load((index * 0x8 + 0x7)
+      << 2));\n\t\t\n\n\t\t\n#if VFX_USE_OLDPOSITION_CURRENT\n\t\toldPosition = position;\n#endif\n\t\t\n\t\t{\n\t\t
+      \   Gravity( /*inout */velocity, float3(0,-9.81,0), deltaTime_a);\n\t\t}\n\t\t{\n\t\t
+      \   float tmp_bi = max(scaleY, scaleX);\n\t\t    float tmp_bj = max(scaleZ,
+      tmp_bi);\n\t\t    float tmp_bk = tmp_bj * size;\n\t\t    float tmp_bm = tmp_bk
+      * (float)0.5;\n\t\t    CollisionAABox_18C( /*inout */position,  /*inout */velocity,
+      \ /*inout */age, lifetime,  /*inout */seed, box_center_b, box_size_b, (float)0.1,
+      (float)0.01, (float)0.05, (float)0.15, deltaTime_a, (float)1, tmp_bm);\n\t\t}\n\t\t{\n\t\t
+      \   CollisionAABox_0( /*inout */position,  /*inout */velocity,  /*inout */age,
+      lifetime, box_center_c, box_size_c, (float)0.1, (float)0, (float)0, deltaTime_a,
+      (float)1, (float)0);\n\t\t}\n\t\t{\n\t\t    CollisionSphere_0( /*inout */position,
+      \ /*inout */velocity,  /*inout */age, lifetime, float3(8.454927,-12.62524,6.134962),
+      (float)5, (float)0.1, (float)0, (float)0, deltaTime_a, (float)1, (float)0);\n\t\t}\n\t\tEulerIntegration(
       /*inout */position, velocity, deltaTime_a);\n\t\tAngularEulerIntegration( /*inout
       */angleX, angularVelocityX,  /*inout */angleY, angularVelocityY,  /*inout */angleZ,
       angularVelocityZ, deltaTime_a);\n\t\tAge( /*inout */age, deltaTime_a);\n\t\tReap(age,
-      lifetime,  /*inout */alive);\n\t\t\n\n\t\tattributeBuffer.Store3((index * 0x4
-      + 0x0) << 2,asuint(velocity));\n\t\tattributeBuffer.Store((index * 0x4 + 0x3)
-      << 2,asuint(seed));\n\t\tattributeBuffer.Store3((index * 0x4 + 0x1D580) << 2,asuint(position));\n\t\tattributeBuffer.Store((index
-      * 0x5 + 0x3F940) << 2,asuint(age));\n\t\tattributeBuffer.Store((index * 0x5
-      + 0x3F941) << 2,uint(alive));\n\t\tattributeBuffer.Store((index * 0x5 + 0x3F942)
-      << 2,asuint(angleX));\n\t\tattributeBuffer.Store((index * 0x5 + 0x3F943) <<
-      2,asuint(angleY));\n\t\tattributeBuffer.Store((index * 0x5 + 0x3F944) << 2,asuint(angleZ));\n\t\t\n\n#if
-      VFX_HAS_INDIRECT_DRAW\n        uint indirectIndex = indirectBuffer.IncrementCounter();\n\t\tindirectBuffer[indirectIndex]
+      lifetime,  /*inout */alive);\n\t\t\n\n\t\tattributeBuffer.Store3((index * 0x8
+      + 0x0) << 2,asuint(velocity));\n\t\tattributeBuffer.Store((index * 0x1 + 0x27200)
+      << 2,asuint(seed));\n\t\tattributeBuffer.Store3((index * 0x4 + 0x35CC0) << 2,asuint(position));\n\t\tattributeBuffer.Store((index
+      * 0x8 + 0x3) << 2,asuint(age));\n\t\tattributeBuffer.Store((index * 0x8 + 0x4)
+      << 2,uint(alive));\n\t\tattributeBuffer.Store((index * 0x8 + 0x5) << 2,asuint(angleX));\n\t\tattributeBuffer.Store((index
+      * 0x8 + 0x6) << 2,asuint(angleY));\n\t\tattributeBuffer.Store((index * 0x8 +
+      0x7) << 2,asuint(angleZ));\n\t\t\n\n#if VFX_HAS_INDIRECT_DRAW\n        uint
+      indirectIndex = indirectBuffer.IncrementCounter();\n\t\tindirectBuffer[indirectIndex]
       = index;\n#endif\n#endif\n\t}\n}\n"
   - compute: 0
     name: '[System 1]Quad Output'
@@ -1178,24 +1174,23 @@ VisualEffectResource:
       \"RenderType\"=\"Transparent\" }\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\tBlend
       One OneMinusSrcAlpha\n\t\tZTest LEqual\n\t\tZWrite Off\n\t\tCull Off\n\t\t\n\t\n\t\t\t\n\t\tHLSLINCLUDE\n\t\t#if
       !defined(VFX_WORLD_SPACE) && !defined(VFX_LOCAL_SPACE)\n\t\t#define VFX_LOCAL_SPACE
-      1\n\t\t#endif\n\t\t\n\t\t#define NB_THREADS_PER_GROUP 64\n\t\t#define VFX_USE_LIFETIME_CURRENT
-      1\n\t\t#define VFX_USE_POSITION_CURRENT 1\n\t\t#define VFX_USE_SIZE_CURRENT
-      1\n\t\t#define VFX_USE_AGE_CURRENT 1\n\t\t#define VFX_USE_SCALEZ_CURRENT 1\n\t\t#define
-      VFX_USE_SCALEY_CURRENT 1\n\t\t#define VFX_USE_SCALEX_CURRENT 1\n\t\t#define
-      VFX_USE_COLOR_CURRENT 1\n\t\t#define VFX_USE_ALPHA_CURRENT 1\n\t\t#define VFX_USE_ALIVE_CURRENT
-      1\n\t\t#define VFX_USE_AXISX_CURRENT 1\n\t\t#define VFX_USE_AXISY_CURRENT 1\n\t\t#define
-      VFX_USE_AXISZ_CURRENT 1\n\t\t#define VFX_USE_ANGLEX_CURRENT 1\n\t\t#define VFX_USE_ANGLEY_CURRENT
-      1\n\t\t#define VFX_USE_ANGLEZ_CURRENT 1\n\t\t#define VFX_USE_PIVOTX_CURRENT
-      1\n\t\t#define VFX_USE_PIVOTY_CURRENT 1\n\t\t#define VFX_USE_PIVOTZ_CURRENT
-      1\n\t\t#define VFX_COLORMAPPING_DEFAULT 1\n\t\t#define IS_TRANSPARENT_PARTICLE
-      1\n\t\t#define USE_SOFT_PARTICLE 1\n\t\t#define VFX_BLENDMODE_PREMULTIPLY 1\n\t\t#define
-      USE_CAST_SHADOWS_PASS 1\n\t\t#define VFX_HAS_INDIRECT_DRAW 1\n\t\t#define USE_DEAD_LIST_COUNT
-      1\n\t\t#define VFX_PRIMITIVE_QUAD 1\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t#define VFX_LOCAL_SPACE
-      1\n\t\t#include \"Packages/com.unity.visualeffectgraph/Shaders/RenderPipeline/LWRP/VFXDefines.hlsl\"\n\t\t\n\n\t\tCBUFFER_START(parameters)\n\t\t
-      \   float4 Size_b;\n\t\t    float gradient_c;\n\t\t    float invSoftParticlesFadeDistance;\n\t\t
-      \   uint2 PADDING_0;\n\t\tCBUFFER_END\n\t\tTexture2D mainTexture;\n\t\tSamplerState
-      samplermainTexture;\n\t\t\n\n\t\t\n\t\t#define VFX_NEEDS_COLOR_INTERPOLATOR
-      (VFX_USE_COLOR_CURRENT || VFX_USE_ALPHA_CURRENT)\n\t\t\n\t\tByteAddressBuffer
+      1\n\t\t#endif\n\t\t\n\t\t#define NB_THREADS_PER_GROUP 64\n\t\t#define VFX_USE_VELOCITY_CURRENT
+      1\n\t\t#define VFX_USE_LIFETIME_CURRENT 1\n\t\t#define VFX_USE_POSITION_CURRENT
+      1\n\t\t#define VFX_USE_SIZE_CURRENT 1\n\t\t#define VFX_USE_AGE_CURRENT 1\n\t\t#define
+      VFX_USE_SCALEZ_CURRENT 1\n\t\t#define VFX_USE_SCALEY_CURRENT 1\n\t\t#define
+      VFX_USE_SCALEX_CURRENT 1\n\t\t#define VFX_USE_COLOR_CURRENT 1\n\t\t#define VFX_USE_ALPHA_CURRENT
+      1\n\t\t#define VFX_USE_ALIVE_CURRENT 1\n\t\t#define VFX_USE_AXISX_CURRENT 1\n\t\t#define
+      VFX_USE_AXISY_CURRENT 1\n\t\t#define VFX_USE_AXISZ_CURRENT 1\n\t\t#define VFX_USE_ANGLEX_CURRENT
+      1\n\t\t#define VFX_USE_ANGLEY_CURRENT 1\n\t\t#define VFX_USE_ANGLEZ_CURRENT
+      1\n\t\t#define VFX_USE_PIVOTX_CURRENT 1\n\t\t#define VFX_USE_PIVOTY_CURRENT
+      1\n\t\t#define VFX_USE_PIVOTZ_CURRENT 1\n\t\t#define VFX_COLORMAPPING_DEFAULT
+      1\n\t\t#define IS_TRANSPARENT_PARTICLE 1\n\t\t#define USE_SOFT_PARTICLE 1\n\t\t#define
+      VFX_BLENDMODE_PREMULTIPLY 1\n\t\t#define USE_CAST_SHADOWS_PASS 1\n\t\t#define
+      VFX_HAS_INDIRECT_DRAW 1\n\t\t#define USE_DEAD_LIST_COUNT 1\n\t\t#define VFX_PRIMITIVE_QUAD
+      1\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t#define VFX_LOCAL_SPACE 1\n\t\t#include \"Packages/com.unity.visualeffectgraph/Shaders/RenderPipeline/LWRP/VFXDefines.hlsl\"\n\t\t\n\n\t\tCBUFFER_START(parameters)\n\t\t
+      \   float4 Size_b;\n\t\t    float gradient_c;\n\t\t    uint3 PADDING_0;\n\t\tCBUFFER_END\n\t\tTexture2D
+      mainTexture;\n\t\tSamplerState samplermainTexture;\n\t\t\n\n\t\t\n\t\t#define
+      VFX_NEEDS_COLOR_INTERPOLATOR (VFX_USE_COLOR_CURRENT || VFX_USE_ALPHA_CURRENT)\n\t\t\n\t\tByteAddressBuffer
       attributeBuffer;\t\n\t\t\n\t\t#if VFX_HAS_INDIRECT_DRAW\n\t\tStructuredBuffer<uint>
       indirectBuffer;\t\n\t\t#endif\t\n\t\t\n\t\t#if USE_DEAD_LIST_COUNT\n\t\tByteAddressBuffer
       deadListCount;\n\t\t#endif\n\t\t\n\t\tCBUFFER_START(outputParams)\n\t\t\tfloat
@@ -1224,61 +1219,61 @@ VisualEffectResource:
       VFX_VARYING_PS_INPUTS, VFX_VARYING_POSCS and VFX_VARYING_UV must be defined.\n\t\t\t#endif\n\t\t\t\n\t\t\t#include
       \"Packages/com.unity.visualeffectgraph/Shaders/RenderPipeline/LWRP/VFXCommon.cginc\"\n\t\t\t#include
       \"Packages/com.unity.visualeffectgraph/Shaders/VFXCommon.cginc\"\n\t\t\t\n\n\t\t\tvoid
-      Orient_0(inout float3 axisX, inout float3 axisY, inout float3 axisZ) /*mode:FaceCameraPlane
-      */\n\t\t\t{\n\t\t\t    \n\t\t\t    float3x3 viewRot = GetVFXToViewRotMatrix();\n\t\t\t
-      \   axisX = viewRot[0].xyz;\n\t\t\t    axisY = viewRot[1].xyz;\n\t\t\t    #if
-      VFX_LOCAL_SPACE // Need to remove potential scale in local transform\n\t\t\t
-      \   axisX = normalize(axisX);\n\t\t\t    axisY = normalize(axisY);\n\t\t\t    axisZ
-      = cross(axisX,axisY);\n\t\t\t    #else\n\t\t\t    axisZ = -viewRot[2].xyz;\n\t\t\t
-      \   #endif\n\t\t\t    \n\t\t\t}\n\t\t\tvoid AttributeFromCurve_7DF18695(inout
-      float size, float age, float lifetime, float4 Size) /*attribute:size Composition:Multiply
-      AlphaComposition:Overwrite SampleMode:OverLife Mode:PerComponent ColorMode:ColorAndAlpha
-      channels:X */\n\t\t\t{\n\t\t\t    float t = age / lifetime;\n\t\t\t    float
-      value = 0.0f;\n\t\t\t    value = SampleCurve(Size, t);\n\t\t\t    size *= value;\n\t\t\t}\n\t\t\tvoid
-      ColorOverLife_736FB(float age, float lifetime, inout float3 color, inout float
-      alpha, float gradient) /*mode:ColorAndAlpha ColorComposition:Overwrite AlphaComposition:Overwrite
-      */\n\t\t\t{\n\t\t\t    \n\t\t\t    float4 sampledColor = SampleGradient(gradient,
-      age/lifetime);\n\t\t\t    color = sampledColor.rgb;\n\t\t\t    alpha = sampledColor.a;\n\t\t\t
-      \   \n\t\t\t}\n\t\t\t\n\n\t\t\t\n\t\t\t#pragma vertex vert\n\t\t\tVFX_VARYING_PS_INPUTS
-      vert(uint id : SV_VertexID, uint instanceID : SV_InstanceID)\n\t\t\t{\n\t\t\t#if
-      VFX_PRIMITIVE_TRIANGLE\n\t\t\t\tuint index = id / 3;\n\t\t\t#elif VFX_PRIMITIVE_QUAD\n\t\t\t\tuint
-      index = (id >> 2) + instanceID * 2048;\n\t\t\t#elif VFX_PRIMITIVE_OCTAGON\n\t\t\t\tuint
-      index = (id >> 3) + instanceID * 1024;\n\t\t\t#endif\n\t\t\t\n\t\t\t\tVFX_VARYING_PS_INPUTS
+      Orient_6(inout float3 axisX, inout float3 axisY, inout float3 axisZ, float3
+      position, float3 velocity) /*mode:AlongVelocity */\n\t\t\t{\n\t\t\t    \n\t\t\t
+      \   axisY = normalize(velocity);\n\t\t\t    axisZ = position - GetViewVFXPosition();\n\t\t\t
+      \   axisX = normalize(cross(axisY,axisZ));\n\t\t\t    axisZ = cross(axisX,axisY);\n\t\t\t
+      \   \n\t\t\t}\n\t\t\tvoid AttributeFromCurve_7DF18695(inout float size, float
+      age, float lifetime, float4 Size) /*attribute:size Composition:Multiply AlphaComposition:Overwrite
+      SampleMode:OverLife Mode:PerComponent ColorMode:ColorAndAlpha channels:X */\n\t\t\t{\n\t\t\t
+      \   float t = age / lifetime;\n\t\t\t    float value = 0.0f;\n\t\t\t    value
+      = SampleCurve(Size, t);\n\t\t\t    size *= value;\n\t\t\t}\n\t\t\tvoid ColorOverLife_736FB(float
+      age, float lifetime, inout float3 color, inout float alpha, float gradient)
+      /*mode:ColorAndAlpha ColorComposition:Overwrite AlphaComposition:Overwrite */\n\t\t\t{\n\t\t\t
+      \   \n\t\t\t    float4 sampledColor = SampleGradient(gradient, age/lifetime);\n\t\t\t
+      \   color = sampledColor.rgb;\n\t\t\t    alpha = sampledColor.a;\n\t\t\t    \n\t\t\t}\n\t\t\t\n\n\t\t\t\n\t\t\t#pragma
+      vertex vert\n\t\t\tVFX_VARYING_PS_INPUTS vert(uint id : SV_VertexID, uint instanceID
+      : SV_InstanceID)\n\t\t\t{\n\t\t\t#if VFX_PRIMITIVE_TRIANGLE\n\t\t\t\tuint index
+      = id / 3;\n\t\t\t#elif VFX_PRIMITIVE_QUAD\n\t\t\t\tuint index = (id >> 2) +
+      instanceID * 2048;\n\t\t\t#elif VFX_PRIMITIVE_OCTAGON\n\t\t\t\tuint index =
+      (id >> 3) + instanceID * 1024;\n\t\t\t#endif\n\t\t\t\n\t\t\t\tVFX_VARYING_PS_INPUTS
       o = (VFX_VARYING_PS_INPUTS)0;\n\t\t\t\n\t\t\t\t\n\t\t\t\t\t\tuint deadCount
       = 0;\n\t\t\t\t\t\t#if USE_DEAD_LIST_COUNT\n\t\t\t\t\t\tdeadCount = deadListCount.Load(0);\n\t\t\t\t\t\t#endif\t\n\t\t\t\t\t\tif
       (index >= asuint(nbMax) - deadCount)\n\t\t\t\t\t\t#if USE_GEOMETRY_SHADER\n\t\t\t\t\t\t\treturn;
       // cull\n\t\t\t\t\t\t#else\n\t\t\t\t\t\t\treturn o; // cull\n\t\t\t\t\t\t#endif\n\t\t\t\t\t\t\n\t\t\t\t\t\t#if
-      VFX_HAS_INDIRECT_DRAW\n\t\t\t\t\t\tindex = indirectBuffer[index];\n\t\t\t\t\t\tfloat
-      lifetime = asfloat(attributeBuffer.Load((index * 0x2 + 0x13900) << 2));\n\t\t\t\t\t\tfloat3
-      position = asfloat(attributeBuffer.Load3((index * 0x4 + 0x1D580) << 2));\n\t\t\t\t\t\tfloat
-      size = asfloat(attributeBuffer.Load((index * 0x2 + 0x13901) << 2));\n\t\t\t\t\t\tfloat
-      age = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F940) << 2));\n\t\t\t\t\t\tfloat
+      VFX_HAS_INDIRECT_DRAW\n\t\t\t\t\t\tindex = indirectBuffer[index];\n\t\t\t\t\t\tfloat3
+      velocity = asfloat(attributeBuffer.Load3((index * 0x8 + 0x0) << 2));\n\t\t\t\t\t\tfloat
+      lifetime = asfloat(attributeBuffer.Load((index * 0x2 + 0x2C040) << 2));\n\t\t\t\t\t\tfloat3
+      position = asfloat(attributeBuffer.Load3((index * 0x4 + 0x35CC0) << 2));\n\t\t\t\t\t\tfloat
+      size = asfloat(attributeBuffer.Load((index * 0x2 + 0x2C041) << 2));\n\t\t\t\t\t\tfloat
+      age = asfloat(attributeBuffer.Load((index * 0x8 + 0x3) << 2));\n\t\t\t\t\t\tfloat
       scaleZ = (float)1;\n\t\t\t\t\t\tfloat scaleY = (float)1;\n\t\t\t\t\t\tfloat
       scaleX = (float)1;\n\t\t\t\t\t\tfloat3 color = float3(1,1,1);\n\t\t\t\t\t\tfloat
-      alpha = (float)1;\n\t\t\t\t\t\tbool alive = (attributeBuffer.Load((index * 0x5
-      + 0x3F941) << 2));\n\t\t\t\t\t\tfloat3 axisX = float3(1,0,0);\n\t\t\t\t\t\tfloat3
+      alpha = (float)1;\n\t\t\t\t\t\tbool alive = (attributeBuffer.Load((index * 0x8
+      + 0x4) << 2));\n\t\t\t\t\t\tfloat3 axisX = float3(1,0,0);\n\t\t\t\t\t\tfloat3
       axisY = float3(0,1,0);\n\t\t\t\t\t\tfloat3 axisZ = float3(0,0,1);\n\t\t\t\t\t\tfloat
-      angleX = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F942) << 2));\n\t\t\t\t\t\tfloat
-      angleY = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F943) << 2));\n\t\t\t\t\t\tfloat
-      angleZ = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F944) << 2));\n\t\t\t\t\t\tfloat
+      angleX = asfloat(attributeBuffer.Load((index * 0x8 + 0x5) << 2));\n\t\t\t\t\t\tfloat
+      angleY = asfloat(attributeBuffer.Load((index * 0x8 + 0x6) << 2));\n\t\t\t\t\t\tfloat
+      angleZ = asfloat(attributeBuffer.Load((index * 0x8 + 0x7) << 2));\n\t\t\t\t\t\tfloat
       pivotX = (float)0;\n\t\t\t\t\t\tfloat pivotY = (float)0;\n\t\t\t\t\t\tfloat
       pivotZ = (float)0;\n\t\t\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\t#else\n\t\t\t\t\t\tbool
-      alive = (attributeBuffer.Load((index * 0x5 + 0x3F941) << 2));\n\t\t\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\tif
-      (!alive)\n\t\t\t\t\t\t\treturn o;\n\t\t\t\t\t\t\t\n\t\t\t\t\t\tfloat lifetime
-      = asfloat(attributeBuffer.Load((index * 0x2 + 0x13900) << 2));\n\t\t\t\t\t\tfloat3
-      position = asfloat(attributeBuffer.Load3((index * 0x4 + 0x1D580) << 2));\n\t\t\t\t\t\tfloat
-      size = asfloat(attributeBuffer.Load((index * 0x2 + 0x13901) << 2));\n\t\t\t\t\t\tfloat
-      age = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F940) << 2));\n\t\t\t\t\t\tfloat
+      alive = (attributeBuffer.Load((index * 0x8 + 0x4) << 2));\n\t\t\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\tif
+      (!alive)\n\t\t\t\t\t\t\treturn o;\n\t\t\t\t\t\t\t\n\t\t\t\t\t\tfloat3 velocity
+      = asfloat(attributeBuffer.Load3((index * 0x8 + 0x0) << 2));\n\t\t\t\t\t\tfloat
+      lifetime = asfloat(attributeBuffer.Load((index * 0x2 + 0x2C040) << 2));\n\t\t\t\t\t\tfloat3
+      position = asfloat(attributeBuffer.Load3((index * 0x4 + 0x35CC0) << 2));\n\t\t\t\t\t\tfloat
+      size = asfloat(attributeBuffer.Load((index * 0x2 + 0x2C041) << 2));\n\t\t\t\t\t\tfloat
+      age = asfloat(attributeBuffer.Load((index * 0x8 + 0x3) << 2));\n\t\t\t\t\t\tfloat
       scaleZ = (float)1;\n\t\t\t\t\t\tfloat scaleY = (float)1;\n\t\t\t\t\t\tfloat
       scaleX = (float)1;\n\t\t\t\t\t\tfloat3 color = float3(1,1,1);\n\t\t\t\t\t\tfloat
       alpha = (float)1;\n\t\t\t\t\t\tfloat3 axisX = float3(1,0,0);\n\t\t\t\t\t\tfloat3
       axisY = float3(0,1,0);\n\t\t\t\t\t\tfloat3 axisZ = float3(0,0,1);\n\t\t\t\t\t\tfloat
-      angleX = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F942) << 2));\n\t\t\t\t\t\tfloat
-      angleY = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F943) << 2));\n\t\t\t\t\t\tfloat
-      angleZ = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F944) << 2));\n\t\t\t\t\t\tfloat
+      angleX = asfloat(attributeBuffer.Load((index * 0x8 + 0x5) << 2));\n\t\t\t\t\t\tfloat
+      angleY = asfloat(attributeBuffer.Load((index * 0x8 + 0x6) << 2));\n\t\t\t\t\t\tfloat
+      angleZ = asfloat(attributeBuffer.Load((index * 0x8 + 0x7) << 2));\n\t\t\t\t\t\tfloat
       pivotX = (float)0;\n\t\t\t\t\t\tfloat pivotY = (float)0;\n\t\t\t\t\t\tfloat
-      pivotZ = (float)0;\n\t\t\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\t#endif\n\t\t\t\t\t\t\n\t\t\t\tOrient_0(
-      /*inout */axisX,  /*inout */axisY,  /*inout */axisZ);\n\t\t\t\tAttributeFromCurve_7DF18695(
+      pivotZ = (float)0;\n\t\t\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\t#endif\n\t\t\t\t\t\t\n\t\t\t\tOrient_6(
+      /*inout */axisX,  /*inout */axisY,  /*inout */axisZ, position, velocity);\n\t\t\t\tAttributeFromCurve_7DF18695(
       /*inout */size, age, lifetime, Size_b);\n\t\t\t\tColorOverLife_736FB(age, lifetime,
       \ /*inout */color,  /*inout */alpha, gradient_c);\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\tif
       (!alive)\n\t\t\t\t\treturn o;\n\t\t\t\t\n\t\t\t#if VFX_PRIMITIVE_QUAD\n\t\t\t\n\t\t\t\to.VFX_VARYING_UV.x
@@ -1310,7 +1305,9 @@ VisualEffectResource:
       \n\t\t\t\t\t\to.VFX_VARYING_ALPHA = alpha;\n\t\t\t\t\t\t#endif\n\t\t\t\t\t\t\n\t\t\t\t\t\t#ifdef
       VFX_VARYING_EXPOSUREWEIGHT\n\t\t\t\t\t\t\n\t\t\t\t\t\to.VFX_VARYING_EXPOSUREWEIGHT
       = exposureWeight;\n\t\t\t\t\t\t#endif\n\t\t\t\t\t\t\n\t\t\t\t\t\t#if USE_SOFT_PARTICLE
-      && defined(VFX_VARYING_INVSOFTPARTICLEFADEDISTANCE)\n\t\t\t\t\t\t\n\t\t\t\t\t\to.VFX_VARYING_INVSOFTPARTICLEFADEDISTANCE
+      && defined(VFX_VARYING_INVSOFTPARTICLEFADEDISTANCE)\n\t\t\t\t\t\tfloat invSoftParticlesFadeDistance
+      = (float)0;\n\t\t\t\t\t\t{\n\t\t\t\t\t\t    \n\t\t\t\t\t\t    invSoftParticlesFadeDistance
+      = (float)1;\n\t\t\t\t\t\t}\n\t\t\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\to.VFX_VARYING_INVSOFTPARTICLEFADEDISTANCE
       = invSoftParticlesFadeDistance;\n\t\t\t\t\t\t#endif\n\t\t\t\t\t\t\n\t\t\t\t\t\t#if
       USE_ALPHA_TEST && defined(VFX_VARYING_ALPHATHRESHOLD)\n\t\t\t\t\t\t\n\t\t\t\t\t\to.VFX_VARYING_ALPHATHRESHOLD
       = alphaThreshold;\n\t\t\t\t\t\t#endif\n\t\t\t\t\t\t\n\t\t\t\t\t\t#if USE_UV_SCALE_BIAS\n\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\to.VFX_VARYING_UV.xy
@@ -1353,61 +1350,61 @@ VisualEffectResource:
       VFX_VARYING_PS_INPUTS, VFX_VARYING_POSCS and VFX_VARYING_UV must be defined.\n\t\t\t#endif\n\t\t\t\n\t\t\t#include
       \"Packages/com.unity.visualeffectgraph/Shaders/RenderPipeline/LWRP/VFXCommon.cginc\"\n\t\t\t#include
       \"Packages/com.unity.visualeffectgraph/Shaders/VFXCommon.cginc\"\n\t\t\t\n\n\t\t\tvoid
-      Orient_0(inout float3 axisX, inout float3 axisY, inout float3 axisZ) /*mode:FaceCameraPlane
-      */\n\t\t\t{\n\t\t\t    \n\t\t\t    float3x3 viewRot = GetVFXToViewRotMatrix();\n\t\t\t
-      \   axisX = viewRot[0].xyz;\n\t\t\t    axisY = viewRot[1].xyz;\n\t\t\t    #if
-      VFX_LOCAL_SPACE // Need to remove potential scale in local transform\n\t\t\t
-      \   axisX = normalize(axisX);\n\t\t\t    axisY = normalize(axisY);\n\t\t\t    axisZ
-      = cross(axisX,axisY);\n\t\t\t    #else\n\t\t\t    axisZ = -viewRot[2].xyz;\n\t\t\t
-      \   #endif\n\t\t\t    \n\t\t\t}\n\t\t\tvoid AttributeFromCurve_7DF18695(inout
-      float size, float age, float lifetime, float4 Size) /*attribute:size Composition:Multiply
-      AlphaComposition:Overwrite SampleMode:OverLife Mode:PerComponent ColorMode:ColorAndAlpha
-      channels:X */\n\t\t\t{\n\t\t\t    float t = age / lifetime;\n\t\t\t    float
-      value = 0.0f;\n\t\t\t    value = SampleCurve(Size, t);\n\t\t\t    size *= value;\n\t\t\t}\n\t\t\tvoid
-      ColorOverLife_736FB(float age, float lifetime, inout float3 color, inout float
-      alpha, float gradient) /*mode:ColorAndAlpha ColorComposition:Overwrite AlphaComposition:Overwrite
-      */\n\t\t\t{\n\t\t\t    \n\t\t\t    float4 sampledColor = SampleGradient(gradient,
-      age/lifetime);\n\t\t\t    color = sampledColor.rgb;\n\t\t\t    alpha = sampledColor.a;\n\t\t\t
-      \   \n\t\t\t}\n\t\t\t\n\n\t\t\t\n\t\t\t#pragma vertex vert\n\t\t\tVFX_VARYING_PS_INPUTS
-      vert(uint id : SV_VertexID, uint instanceID : SV_InstanceID)\n\t\t\t{\n\t\t\t#if
-      VFX_PRIMITIVE_TRIANGLE\n\t\t\t\tuint index = id / 3;\n\t\t\t#elif VFX_PRIMITIVE_QUAD\n\t\t\t\tuint
-      index = (id >> 2) + instanceID * 2048;\n\t\t\t#elif VFX_PRIMITIVE_OCTAGON\n\t\t\t\tuint
-      index = (id >> 3) + instanceID * 1024;\n\t\t\t#endif\n\t\t\t\n\t\t\t\tVFX_VARYING_PS_INPUTS
+      Orient_6(inout float3 axisX, inout float3 axisY, inout float3 axisZ, float3
+      position, float3 velocity) /*mode:AlongVelocity */\n\t\t\t{\n\t\t\t    \n\t\t\t
+      \   axisY = normalize(velocity);\n\t\t\t    axisZ = position - GetViewVFXPosition();\n\t\t\t
+      \   axisX = normalize(cross(axisY,axisZ));\n\t\t\t    axisZ = cross(axisX,axisY);\n\t\t\t
+      \   \n\t\t\t}\n\t\t\tvoid AttributeFromCurve_7DF18695(inout float size, float
+      age, float lifetime, float4 Size) /*attribute:size Composition:Multiply AlphaComposition:Overwrite
+      SampleMode:OverLife Mode:PerComponent ColorMode:ColorAndAlpha channels:X */\n\t\t\t{\n\t\t\t
+      \   float t = age / lifetime;\n\t\t\t    float value = 0.0f;\n\t\t\t    value
+      = SampleCurve(Size, t);\n\t\t\t    size *= value;\n\t\t\t}\n\t\t\tvoid ColorOverLife_736FB(float
+      age, float lifetime, inout float3 color, inout float alpha, float gradient)
+      /*mode:ColorAndAlpha ColorComposition:Overwrite AlphaComposition:Overwrite */\n\t\t\t{\n\t\t\t
+      \   \n\t\t\t    float4 sampledColor = SampleGradient(gradient, age/lifetime);\n\t\t\t
+      \   color = sampledColor.rgb;\n\t\t\t    alpha = sampledColor.a;\n\t\t\t    \n\t\t\t}\n\t\t\t\n\n\t\t\t\n\t\t\t#pragma
+      vertex vert\n\t\t\tVFX_VARYING_PS_INPUTS vert(uint id : SV_VertexID, uint instanceID
+      : SV_InstanceID)\n\t\t\t{\n\t\t\t#if VFX_PRIMITIVE_TRIANGLE\n\t\t\t\tuint index
+      = id / 3;\n\t\t\t#elif VFX_PRIMITIVE_QUAD\n\t\t\t\tuint index = (id >> 2) +
+      instanceID * 2048;\n\t\t\t#elif VFX_PRIMITIVE_OCTAGON\n\t\t\t\tuint index =
+      (id >> 3) + instanceID * 1024;\n\t\t\t#endif\n\t\t\t\n\t\t\t\tVFX_VARYING_PS_INPUTS
       o = (VFX_VARYING_PS_INPUTS)0;\n\t\t\t\n\t\t\t\t\n\t\t\t\t\t\tuint deadCount
       = 0;\n\t\t\t\t\t\t#if USE_DEAD_LIST_COUNT\n\t\t\t\t\t\tdeadCount = deadListCount.Load(0);\n\t\t\t\t\t\t#endif\t\n\t\t\t\t\t\tif
       (index >= asuint(nbMax) - deadCount)\n\t\t\t\t\t\t#if USE_GEOMETRY_SHADER\n\t\t\t\t\t\t\treturn;
       // cull\n\t\t\t\t\t\t#else\n\t\t\t\t\t\t\treturn o; // cull\n\t\t\t\t\t\t#endif\n\t\t\t\t\t\t\n\t\t\t\t\t\t#if
-      VFX_HAS_INDIRECT_DRAW\n\t\t\t\t\t\tindex = indirectBuffer[index];\n\t\t\t\t\t\tfloat
-      lifetime = asfloat(attributeBuffer.Load((index * 0x2 + 0x13900) << 2));\n\t\t\t\t\t\tfloat3
-      position = asfloat(attributeBuffer.Load3((index * 0x4 + 0x1D580) << 2));\n\t\t\t\t\t\tfloat
-      size = asfloat(attributeBuffer.Load((index * 0x2 + 0x13901) << 2));\n\t\t\t\t\t\tfloat
-      age = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F940) << 2));\n\t\t\t\t\t\tfloat
+      VFX_HAS_INDIRECT_DRAW\n\t\t\t\t\t\tindex = indirectBuffer[index];\n\t\t\t\t\t\tfloat3
+      velocity = asfloat(attributeBuffer.Load3((index * 0x8 + 0x0) << 2));\n\t\t\t\t\t\tfloat
+      lifetime = asfloat(attributeBuffer.Load((index * 0x2 + 0x2C040) << 2));\n\t\t\t\t\t\tfloat3
+      position = asfloat(attributeBuffer.Load3((index * 0x4 + 0x35CC0) << 2));\n\t\t\t\t\t\tfloat
+      size = asfloat(attributeBuffer.Load((index * 0x2 + 0x2C041) << 2));\n\t\t\t\t\t\tfloat
+      age = asfloat(attributeBuffer.Load((index * 0x8 + 0x3) << 2));\n\t\t\t\t\t\tfloat
       scaleZ = (float)1;\n\t\t\t\t\t\tfloat scaleY = (float)1;\n\t\t\t\t\t\tfloat
       scaleX = (float)1;\n\t\t\t\t\t\tfloat3 color = float3(1,1,1);\n\t\t\t\t\t\tfloat
-      alpha = (float)1;\n\t\t\t\t\t\tbool alive = (attributeBuffer.Load((index * 0x5
-      + 0x3F941) << 2));\n\t\t\t\t\t\tfloat3 axisX = float3(1,0,0);\n\t\t\t\t\t\tfloat3
+      alpha = (float)1;\n\t\t\t\t\t\tbool alive = (attributeBuffer.Load((index * 0x8
+      + 0x4) << 2));\n\t\t\t\t\t\tfloat3 axisX = float3(1,0,0);\n\t\t\t\t\t\tfloat3
       axisY = float3(0,1,0);\n\t\t\t\t\t\tfloat3 axisZ = float3(0,0,1);\n\t\t\t\t\t\tfloat
-      angleX = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F942) << 2));\n\t\t\t\t\t\tfloat
-      angleY = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F943) << 2));\n\t\t\t\t\t\tfloat
-      angleZ = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F944) << 2));\n\t\t\t\t\t\tfloat
+      angleX = asfloat(attributeBuffer.Load((index * 0x8 + 0x5) << 2));\n\t\t\t\t\t\tfloat
+      angleY = asfloat(attributeBuffer.Load((index * 0x8 + 0x6) << 2));\n\t\t\t\t\t\tfloat
+      angleZ = asfloat(attributeBuffer.Load((index * 0x8 + 0x7) << 2));\n\t\t\t\t\t\tfloat
       pivotX = (float)0;\n\t\t\t\t\t\tfloat pivotY = (float)0;\n\t\t\t\t\t\tfloat
       pivotZ = (float)0;\n\t\t\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\t#else\n\t\t\t\t\t\tbool
-      alive = (attributeBuffer.Load((index * 0x5 + 0x3F941) << 2));\n\t\t\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\tif
-      (!alive)\n\t\t\t\t\t\t\treturn o;\n\t\t\t\t\t\t\t\n\t\t\t\t\t\tfloat lifetime
-      = asfloat(attributeBuffer.Load((index * 0x2 + 0x13900) << 2));\n\t\t\t\t\t\tfloat3
-      position = asfloat(attributeBuffer.Load3((index * 0x4 + 0x1D580) << 2));\n\t\t\t\t\t\tfloat
-      size = asfloat(attributeBuffer.Load((index * 0x2 + 0x13901) << 2));\n\t\t\t\t\t\tfloat
-      age = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F940) << 2));\n\t\t\t\t\t\tfloat
+      alive = (attributeBuffer.Load((index * 0x8 + 0x4) << 2));\n\t\t\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\tif
+      (!alive)\n\t\t\t\t\t\t\treturn o;\n\t\t\t\t\t\t\t\n\t\t\t\t\t\tfloat3 velocity
+      = asfloat(attributeBuffer.Load3((index * 0x8 + 0x0) << 2));\n\t\t\t\t\t\tfloat
+      lifetime = asfloat(attributeBuffer.Load((index * 0x2 + 0x2C040) << 2));\n\t\t\t\t\t\tfloat3
+      position = asfloat(attributeBuffer.Load3((index * 0x4 + 0x35CC0) << 2));\n\t\t\t\t\t\tfloat
+      size = asfloat(attributeBuffer.Load((index * 0x2 + 0x2C041) << 2));\n\t\t\t\t\t\tfloat
+      age = asfloat(attributeBuffer.Load((index * 0x8 + 0x3) << 2));\n\t\t\t\t\t\tfloat
       scaleZ = (float)1;\n\t\t\t\t\t\tfloat scaleY = (float)1;\n\t\t\t\t\t\tfloat
       scaleX = (float)1;\n\t\t\t\t\t\tfloat3 color = float3(1,1,1);\n\t\t\t\t\t\tfloat
       alpha = (float)1;\n\t\t\t\t\t\tfloat3 axisX = float3(1,0,0);\n\t\t\t\t\t\tfloat3
       axisY = float3(0,1,0);\n\t\t\t\t\t\tfloat3 axisZ = float3(0,0,1);\n\t\t\t\t\t\tfloat
-      angleX = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F942) << 2));\n\t\t\t\t\t\tfloat
-      angleY = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F943) << 2));\n\t\t\t\t\t\tfloat
-      angleZ = asfloat(attributeBuffer.Load((index * 0x5 + 0x3F944) << 2));\n\t\t\t\t\t\tfloat
+      angleX = asfloat(attributeBuffer.Load((index * 0x8 + 0x5) << 2));\n\t\t\t\t\t\tfloat
+      angleY = asfloat(attributeBuffer.Load((index * 0x8 + 0x6) << 2));\n\t\t\t\t\t\tfloat
+      angleZ = asfloat(attributeBuffer.Load((index * 0x8 + 0x7) << 2));\n\t\t\t\t\t\tfloat
       pivotX = (float)0;\n\t\t\t\t\t\tfloat pivotY = (float)0;\n\t\t\t\t\t\tfloat
-      pivotZ = (float)0;\n\t\t\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\t#endif\n\t\t\t\t\t\t\n\t\t\t\tOrient_0(
-      /*inout */axisX,  /*inout */axisY,  /*inout */axisZ);\n\t\t\t\tAttributeFromCurve_7DF18695(
+      pivotZ = (float)0;\n\t\t\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\t#endif\n\t\t\t\t\t\t\n\t\t\t\tOrient_6(
+      /*inout */axisX,  /*inout */axisY,  /*inout */axisZ, position, velocity);\n\t\t\t\tAttributeFromCurve_7DF18695(
       /*inout */size, age, lifetime, Size_b);\n\t\t\t\tColorOverLife_736FB(age, lifetime,
       \ /*inout */color,  /*inout */alpha, gradient_c);\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\tif
       (!alive)\n\t\t\t\t\treturn o;\n\t\t\t\t\n\t\t\t#if VFX_PRIMITIVE_QUAD\n\t\t\t\n\t\t\t\to.VFX_VARYING_UV.x
@@ -1439,7 +1436,9 @@ VisualEffectResource:
       \n\t\t\t\t\t\to.VFX_VARYING_ALPHA = alpha;\n\t\t\t\t\t\t#endif\n\t\t\t\t\t\t\n\t\t\t\t\t\t#ifdef
       VFX_VARYING_EXPOSUREWEIGHT\n\t\t\t\t\t\t\n\t\t\t\t\t\to.VFX_VARYING_EXPOSUREWEIGHT
       = exposureWeight;\n\t\t\t\t\t\t#endif\n\t\t\t\t\t\t\n\t\t\t\t\t\t#if USE_SOFT_PARTICLE
-      && defined(VFX_VARYING_INVSOFTPARTICLEFADEDISTANCE)\n\t\t\t\t\t\t\n\t\t\t\t\t\to.VFX_VARYING_INVSOFTPARTICLEFADEDISTANCE
+      && defined(VFX_VARYING_INVSOFTPARTICLEFADEDISTANCE)\n\t\t\t\t\t\tfloat invSoftParticlesFadeDistance
+      = (float)0;\n\t\t\t\t\t\t{\n\t\t\t\t\t\t    \n\t\t\t\t\t\t    invSoftParticlesFadeDistance
+      = (float)1;\n\t\t\t\t\t\t}\n\t\t\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\to.VFX_VARYING_INVSOFTPARTICLEFADEDISTANCE
       = invSoftParticlesFadeDistance;\n\t\t\t\t\t\t#endif\n\t\t\t\t\t\t\n\t\t\t\t\t\t#if
       USE_ALPHA_TEST && defined(VFX_VARYING_ALPHATHRESHOLD)\n\t\t\t\t\t\t\n\t\t\t\t\t\to.VFX_VARYING_ALPHATHRESHOLD
       = alphaThreshold;\n\t\t\t\t\t\t#endif\n\t\t\t\t\t\t\n\t\t\t\t\t\t#if USE_UV_SCALE_BIAS\n\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\to.VFX_VARYING_UV.xy
@@ -1473,7 +1472,7 @@ VisualEffectResource:
       -= deadListCount.Load(0);\n#endif\n\tuint id = groupThreadId.x + groupId.x *
       NB_THREADS_PER_GROUP + groupId.y * dispatchWidth * NB_THREADS_PER_GROUP;\n\tif
       (id < threshold)\n\t{\n\t\tuint index = inputBuffer[id];\n\t\tfloat3 position
-      = asfloat(attributeBuffer.Load3((index * 0x4 + 0x1D580) << 2));\n\t\t\n\n\t\t\n#if
+      = asfloat(attributeBuffer.Load3((index * 0x4 + 0x35CC0) << 2));\n\t\t\n\n\t\t\n#if
       VFX_LOCAL_SPACE\n\t\tfloat3 wPos = mul(localToWorld,float4(position,1.0f)).xyz;\n#else\n\t\tfloat3
       wPos = position;\n#endif\n\t\tfloat3 camToPos = wPos - cameraPosition;\n\t\t\n\t\tKvp
       kvp;\n\t\tkvp.sortKey = dot(camToPos,camToPos); // sqr distance to the camera\n\t\tkvp.index
@@ -1486,13 +1485,13 @@ VisualEffectResource:
         data[0]: -1
         data[1]: -1
         data[2]: -1
-        data[3]: 1
+        data[3]: 14
       - op: 1
         valueIndex: 1
         data[0]: -1
         data[1]: -1
         data[2]: -1
-        data[3]: 1
+        data[3]: 13
       - op: 1
         valueIndex: 2
         data[0]: -1
@@ -1505,54 +1504,24 @@ VisualEffectResource:
         data[1]: -1
         data[2]: -1
         data[3]: 1
-      - op: 1
+      - op: 57
         valueIndex: 4
-        data[0]: -1
+        data[0]: 0
         data[1]: -1
         data[2]: -1
-        data[3]: 1
-      - op: 1
+        data[3]: 0
+      - op: 56
         valueIndex: 5
-        data[0]: -1
+        data[0]: 1
         data[1]: -1
         data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 6
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 7
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 8
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
+        data[3]: 0
       - op: 1
         valueIndex: 9
         data[0]: -1
         data[1]: -1
         data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 10
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 11
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
+        data[3]: 3
       - op: 1
         valueIndex: 12
         data[0]: -1
@@ -1589,54 +1558,30 @@ VisualEffectResource:
         data[1]: -1
         data[2]: -1
         data[3]: 1
-      - op: 1
+      - op: 6
         valueIndex: 18
         data[0]: -1
         data[1]: -1
         data[2]: -1
-        data[3]: 1
+        data[3]: -1
       - op: 1
         valueIndex: 19
         data[0]: -1
         data[1]: -1
         data[2]: -1
-        data[3]: 1
+        data[3]: 7
       - op: 1
         valueIndex: 20
         data[0]: -1
         data[1]: -1
         data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 21
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 22
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
+        data[3]: 3
       - op: 1
         valueIndex: 23
         data[0]: -1
         data[1]: -1
         data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 24
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 25
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
+        data[3]: 3
       - op: 1
         valueIndex: 26
         data[0]: -1
@@ -1649,308 +1594,74 @@ VisualEffectResource:
         data[1]: -1
         data[2]: -1
         data[3]: 1
-      - op: 31
+      - op: 1
         valueIndex: 28
-        data[0]: 1
-        data[1]: 0
-        data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 29
         data[0]: -1
         data[1]: -1
         data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 30
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 14
+        data[3]: 3
       - op: 1
         valueIndex: 31
         data[0]: -1
         data[1]: -1
         data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 32
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 33
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
+        data[3]: 3
       - op: 1
         valueIndex: 34
         data[0]: -1
         data[1]: -1
         data[2]: -1
-        data[3]: 13
-      - op: 1
-        valueIndex: 35
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 36
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
+        data[3]: 3
       - op: 1
         valueIndex: 37
         data[0]: -1
         data[1]: -1
         data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 38
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 39
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
+        data[3]: 3
       - op: 1
         valueIndex: 40
         data[0]: -1
         data[1]: -1
         data[2]: -1
-        data[3]: 1
+        data[3]: 3
       - op: 1
-        valueIndex: 41
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 42
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
-      - op: 31
         valueIndex: 43
-        data[0]: 18
-        data[1]: 36
-        data[2]: -1
-        data[3]: 1
-      - op: 27
-        valueIndex: 44
-        data[0]: 21
-        data[1]: 28
-        data[2]: -1
-        data[3]: 1
-      - op: 3
-        valueIndex: 45
-        data[0]: 12
-        data[1]: 11
-        data[2]: 10
-        data[3]: -1
-      - op: 57
-        valueIndex: 48
-        data[0]: 30
+        data[0]: -1
         data[1]: -1
         data[2]: -1
-        data[3]: 0
+        data[3]: 3
+      - op: 1
+        valueIndex: 46
+        data[0]: -1
+        data[1]: -1
+        data[2]: -1
+        data[3]: 3
       - op: 1
         valueIndex: 49
         data[0]: -1
         data[1]: -1
         data[2]: -1
-        data[3]: 1
-      - op: 56
-        valueIndex: 50
-        data[0]: 34
+        data[3]: 3
+      - op: 1
+        valueIndex: 52
+        data[0]: -1
         data[1]: -1
         data[2]: -1
-        data[3]: 0
-      - op: 31
-        valueIndex: 54
-        data[0]: 3
-        data[1]: 36
-        data[2]: -1
-        data[3]: 1
-      - op: 20
+        data[3]: 3
+      - op: 1
         valueIndex: 55
-        data[0]: 35
+        data[0]: -1
         data[1]: -1
         data[2]: -1
-        data[3]: 1
-      - op: 20
-        valueIndex: 56
-        data[0]: 15
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
-      - op: 31
-        valueIndex: 57
-        data[0]: 23
-        data[1]: 36
-        data[2]: -1
-        data[3]: 1
-      - op: 31
+        data[3]: 3
+      - op: 1
         valueIndex: 58
-        data[0]: 40
-        data[1]: 36
-        data[2]: -1
-        data[3]: 1
-      - op: 20
-        valueIndex: 59
-        data[0]: 20
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
-      - op: 3
-        valueIndex: 60
-        data[0]: 32
-        data[1]: 31
-        data[2]: 26
-        data[3]: -1
-      - op: 3
-        valueIndex: 63
-        data[0]: 42
-        data[1]: 33
-        data[2]: 27
-        data[3]: -1
-      - op: 1
-        valueIndex: 66
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 3
-      - op: 1
-        valueIndex: 69
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 3
-      - op: 1
-        valueIndex: 72
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 3
-      - op: 1
-        valueIndex: 75
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 3
-      - op: 1
-        valueIndex: 78
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 3
-      - op: 1
-        valueIndex: 81
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 3
-      - op: 3
-        valueIndex: 84
-        data[0]: 37
-        data[1]: 38
-        data[2]: 39
-        data[3]: -1
-      - op: 3
-        valueIndex: 87
-        data[0]: 41
-        data[1]: 25
-        data[2]: 29
-        data[3]: -1
-      - op: 31
-        valueIndex: 90
-        data[0]: 24
-        data[1]: 36
-        data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 91
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
-      - op: 3
-        valueIndex: 92
-        data[0]: 4
-        data[1]: 5
-        data[2]: 6
-        data[3]: -1
-      - op: 3
-        valueIndex: 95
-        data[0]: 7
-        data[1]: 8
-        data[2]: 9
-        data[3]: -1
-      - op: 1
-        valueIndex: 98
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 99
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
-      - op: 3
-        valueIndex: 100
-        data[0]: 22
-        data[1]: 2
-        data[2]: 14
-        data[3]: -1
-      - op: 1
-        valueIndex: 103
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: 7
-      - op: 6
-        valueIndex: 104
-        data[0]: -1
-        data[1]: -1
-        data[2]: -1
-        data[3]: -1
-      - op: 31
-        valueIndex: 105
-        data[0]: 16
-        data[1]: 36
-        data[2]: -1
-        data[3]: 1
-      - op: 31
-        valueIndex: 106
-        data[0]: 17
-        data[1]: 36
-        data[2]: -1
-        data[3]: 1
-      - op: 20
-        valueIndex: 107
-        data[0]: 19
-        data[1]: -1
-        data[2]: -1
-        data[3]: 1
-      - op: 1
-        valueIndex: 108
         data[0]: -1
         data[1]: -1
         data[2]: -1
         data[3]: 1
       - op: 9
-        valueIndex: 109
+        valueIndex: 59
         data[0]: -1
         data[1]: -1
         data[2]: -1
@@ -1961,112 +1672,58 @@ VisualEffectResource:
     m_PropertySheet:
       m_Float:
         m_Array:
-        - m_ExpressionIndex: 0
-          m_Value: 0.001
-        - m_ExpressionIndex: 1
-          m_Value: 1
         - m_ExpressionIndex: 2
-          m_Value: -9.81
+          m_Value: 0.5
         - m_ExpressionIndex: 3
-          m_Value: 0.1
-        - m_ExpressionIndex: 4
-          m_Value: 0
-        - m_ExpressionIndex: 5
-          m_Value: 0
-        - m_ExpressionIndex: 6
-          m_Value: 0
+          m_Value: 2500
         - m_ExpressionIndex: 7
           m_Value: 0
         - m_ExpressionIndex: 8
-          m_Value: 0
+          m_Value: 1
         - m_ExpressionIndex: 9
-          m_Value: 0
+          m_Value: 0.15
         - m_ExpressionIndex: 10
-          m_Value: 6.134962
+          m_Value: 0.05
         - m_ExpressionIndex: 11
-          m_Value: -12.625242
+          m_Value: 0.01
         - m_ExpressionIndex: 12
-          m_Value: 8.454927
-        - m_ExpressionIndex: 13
-          m_Value: 0.5
-        - m_ExpressionIndex: 14
-          m_Value: 0
-        - m_ExpressionIndex: 15
-          m_Value: 0
-        - m_ExpressionIndex: 16
           m_Value: 0.1
         - m_ExpressionIndex: 17
-          m_Value: 0.01
+          m_Value: 5
         - m_ExpressionIndex: 18
-          m_Value: 0
-        - m_ExpressionIndex: 19
-          m_Value: 0.05
-        - m_ExpressionIndex: 20
-          m_Value: 0.15
-        - m_ExpressionIndex: 21
-          m_Value: 1
-        - m_ExpressionIndex: 22
-          m_Value: 0
-        - m_ExpressionIndex: 23
-          m_Value: 0
-        - m_ExpressionIndex: 24
-          m_Value: 0.1
-        - m_ExpressionIndex: 25
-          m_Value: 0
-        - m_ExpressionIndex: 26
-          m_Value: 0
-        - m_ExpressionIndex: 27
-          m_Value: 2
+          m_Value: 3
         - m_ExpressionIndex: 29
-          m_Value: 5
-        - m_ExpressionIndex: 31
-          m_Value: 1
-        - m_ExpressionIndex: 32
-          m_Value: 0
-        - m_ExpressionIndex: 33
-          m_Value: 3
-        - m_ExpressionIndex: 35
-          m_Value: 0
-        - m_ExpressionIndex: 36
-          m_Value: 0
-        - m_ExpressionIndex: 37
-          m_Value: -3
-        - m_ExpressionIndex: 38
-          m_Value: 0
-        - m_ExpressionIndex: 39
-          m_Value: 3
-        - m_ExpressionIndex: 40
-          m_Value: 2500
-        - m_ExpressionIndex: 41
-          m_Value: 3
-        - m_ExpressionIndex: 42
           m_Value: 2
-        - m_ExpressionIndex: 47
-          m_Value: 5
-        - m_ExpressionIndex: 66
-          m_Value: 3
-        - m_ExpressionIndex: 69
-          m_Value: 2.04
-        - m_ExpressionIndex: 70
-          m_Value: 5
-        - m_ExpressionIndex: 77
-          m_Value: 5
       m_Vector2f:
         m_Array: []
       m_Vector3f:
         m_Array:
-        - m_ExpressionIndex: 57
+        - m_ExpressionIndex: 6
+          m_Value: {x: 8.454927, y: -12.625242, z: 6.134962}
+        - m_ExpressionIndex: 15
+          m_Value: {x: 0, y: -9.81, z: 0}
+        - m_ExpressionIndex: 16
           m_Value: {x: 0, y: 0, z: 0}
-        - m_ExpressionIndex: 58
+        - m_ExpressionIndex: 19
+          m_Value: {x: 3, y: 0, z: 5}
+        - m_ExpressionIndex: 20
+          m_Value: {x: -3, y: 0, z: 3}
+        - m_ExpressionIndex: 21
           m_Value: {x: 1, y: 1, z: 1}
-        - m_ExpressionIndex: 59
+        - m_ExpressionIndex: 22
           m_Value: {x: 0, y: 0, z: 0}
-        - m_ExpressionIndex: 60
+        - m_ExpressionIndex: 23
           m_Value: {x: 1, y: 1, z: 1}
-        - m_ExpressionIndex: 61
+        - m_ExpressionIndex: 24
           m_Value: {x: 0, y: 0, z: 0}
-        - m_ExpressionIndex: 62
+        - m_ExpressionIndex: 25
           m_Value: {x: 1, y: 1, z: 1}
+        - m_ExpressionIndex: 26
+          m_Value: {x: 0, y: 0, z: 0}
+        - m_ExpressionIndex: 27
+          m_Value: {x: 2, y: 3, z: 2}
+        - m_ExpressionIndex: 28
+          m_Value: {x: 0, y: 1, z: 0}
       m_Vector4f:
         m_Array: []
       m_Uint:
@@ -2077,7 +1734,7 @@ VisualEffectResource:
         m_Array: []
       m_AnimationCurve:
         m_Array:
-        - m_ExpressionIndex: 34
+        - m_ExpressionIndex: 1
           m_Value:
             serializedVersion: 2
             m_Curve:
@@ -2113,7 +1770,7 @@ VisualEffectResource:
             m_RotationOrder: 4
       m_Gradient:
         m_Array:
-        - m_ExpressionIndex: 30
+        - m_ExpressionIndex: 0
           m_Value:
             serializedVersion: 2
             key0: {r: 0.19103774, g: 0.2976635, b: 0.764151, a: 0}
@@ -2145,105 +1802,105 @@ VisualEffectResource:
             m_NumAlphaKeys: 3
       m_NamedObject:
         m_Array:
-        - m_ExpressionIndex: 72
+        - m_ExpressionIndex: 14
           m_Value: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
       m_Bool:
         m_Array: []
     m_ExposedExpressions:
     - nameId: BottomColider_center
-      index: 59
+      index: 24
     - nameId: BottomColider_size
-      index: 60
+      index: 23
     - nameId: SpawnBox_center
-      index: 57
+      index: 26
     - nameId: SpawnBox_size
-      index: 58
+      index: 25
     - nameId: TopBox_center
-      index: 61
+      index: 22
     - nameId: TopBox_size
-      index: 62
+      index: 21
     m_Buffers:
     - type: 1
-      size: 360416
+      size: 360480
       layout:
       - name: velocity
         type: 3
         offset:
           bucket: 0
-          structure: 4
+          structure: 8
           element: 0
+      - name: age
+        type: 1
+        offset:
+          bucket: 0
+          structure: 8
+          element: 3
+      - name: alive
+        type: 17
+        offset:
+          bucket: 0
+          structure: 8
+          element: 4
+      - name: angleX
+        type: 1
+        offset:
+          bucket: 0
+          structure: 8
+          element: 5
+      - name: angleY
+        type: 1
+        offset:
+          bucket: 0
+          structure: 8
+          element: 6
+      - name: angleZ
+        type: 1
+        offset:
+          bucket: 0
+          structure: 8
+          element: 7
       - name: seed
         type: 6
         offset:
-          bucket: 0
-          structure: 4
-          element: 3
+          bucket: 160256
+          structure: 1
+          element: 0
       - name: lifetime
         type: 1
         offset:
-          bucket: 80128
+          bucket: 180288
           structure: 2
           element: 0
       - name: size
         type: 1
         offset:
-          bucket: 80128
+          bucket: 180288
           structure: 2
           element: 1
       - name: position
         type: 3
         offset:
-          bucket: 120192
+          bucket: 220352
           structure: 4
           element: 0
       - name: angularVelocityX
         type: 1
         offset:
-          bucket: 200320
+          bucket: 300480
           structure: 3
           element: 0
       - name: angularVelocityY
         type: 1
         offset:
-          bucket: 200320
+          bucket: 300480
           structure: 3
           element: 1
       - name: angularVelocityZ
         type: 1
         offset:
-          bucket: 200320
+          bucket: 300480
           structure: 3
           element: 2
-      - name: age
-        type: 1
-        offset:
-          bucket: 260416
-          structure: 5
-          element: 0
-      - name: alive
-        type: 17
-        offset:
-          bucket: 260416
-          structure: 5
-          element: 1
-      - name: angleX
-        type: 1
-        offset:
-          bucket: 260416
-          structure: 5
-          element: 2
-      - name: angleY
-        type: 1
-        offset:
-          bucket: 260416
-          structure: 5
-          element: 3
-      - name: angleZ
-        type: 1
-        offset:
-          bucket: 260416
-          structure: 5
-          element: 4
       capacity: 20000
       stride: 4
     - type: 1
@@ -2253,80 +1910,80 @@ VisualEffectResource:
         type: 3
         offset:
           bucket: 0
-          structure: 4
+          structure: 8
           element: 0
+      - name: age
+        type: 1
+        offset:
+          bucket: 0
+          structure: 8
+          element: 3
+      - name: alive
+        type: 17
+        offset:
+          bucket: 0
+          structure: 8
+          element: 4
+      - name: angleX
+        type: 1
+        offset:
+          bucket: 0
+          structure: 8
+          element: 5
+      - name: angleY
+        type: 1
+        offset:
+          bucket: 0
+          structure: 8
+          element: 6
+      - name: angleZ
+        type: 1
+        offset:
+          bucket: 0
+          structure: 8
+          element: 7
       - name: seed
         type: 6
         offset:
-          bucket: 0
-          structure: 4
-          element: 3
+          bucket: 160256
+          structure: 1
+          element: 0
       - name: lifetime
         type: 1
         offset:
-          bucket: 80128
+          bucket: 180288
           structure: 2
           element: 0
       - name: size
         type: 1
         offset:
-          bucket: 80128
+          bucket: 180288
           structure: 2
           element: 1
       - name: position
         type: 3
         offset:
-          bucket: 120192
+          bucket: 220352
           structure: 4
           element: 0
       - name: angularVelocityX
         type: 1
         offset:
-          bucket: 200320
+          bucket: 300480
           structure: 3
           element: 0
       - name: angularVelocityY
         type: 1
         offset:
-          bucket: 200320
+          bucket: 300480
           structure: 3
           element: 1
       - name: angularVelocityZ
         type: 1
         offset:
-          bucket: 200320
+          bucket: 300480
           structure: 3
           element: 2
-      - name: age
-        type: 1
-        offset:
-          bucket: 260416
-          structure: 5
-          element: 0
-      - name: alive
-        type: 17
-        offset:
-          bucket: 260416
-          structure: 5
-          element: 1
-      - name: angleX
-        type: 1
-        offset:
-          bucket: 260416
-          structure: 5
-          element: 2
-      - name: angleY
-        type: 1
-        offset:
-          bucket: 260416
-          structure: 5
-          element: 3
-      - name: angleZ
-        type: 1
-        offset:
-          bucket: 260416
-          structure: 5
-          element: 4
       capacity: 20032
       stride: 4
     - type: 1
@@ -2422,7 +2079,7 @@ VisualEffectResource:
       temporaryBuffers: []
       values:
       - nameId: Rate
-        index: 53
+        index: 3
       params: []
       processor: {fileID: 0}
       shaderSourceIndex: -1
@@ -2449,9 +2106,9 @@ VisualEffectResource:
       index: 7
     values:
     - nameId: bounds_center
-      index: 55
+      index: 28
     - nameId: bounds_size
-      index: 56
+      index: 27
     tasks:
     - type: 536870912
       buffers:
@@ -2465,31 +2122,15 @@ VisualEffectResource:
         index: 2
       temporaryBuffers: []
       values:
-      - nameId: A_a
-        index: 63
-      - nameId: B_a
-        index: 64
-      - nameId: A_b
-        index: 66
-      - nameId: B_b
-        index: 77
       - nameId: Box_center_c
-        index: 57
+        index: 26
       - nameId: Box_size_c
-        index: 58
-      - nameId: A_d
-        index: 67
-      - nameId: B_d
-        index: 68
-      - nameId: A_e
-        index: 69
-      - nameId: B_e
-        index: 70
+        index: 25
       params:
       - nameId: bounds_center
-        index: 55
+        index: 28
       - nameId: bounds_size
-        index: 56
+        index: 27
       processor: {fileID: 0}
       shaderSourceIndex: 0
     - type: 805306368
@@ -2502,42 +2143,16 @@ VisualEffectResource:
         index: 5
       temporaryBuffers: []
       values:
-      - nameId: Force_a
-        index: 71
       - nameId: deltaTime_a
-        index: 73
+        index: 13
       - nameId: box_center_b
-        index: 59
+        index: 24
       - nameId: box_size_b
-        index: 60
-      - nameId: Elasticity_b
-        index: 74
-      - nameId: Friction_b
-        index: 75
-      - nameId: LifetimeLoss_b
-        index: 76
-      - nameId: Roughness_b
-        index: 54
+        index: 23
       - nameId: box_center_c
-        index: 61
+        index: 22
       - nameId: box_size_c
-        index: 62
-      - nameId: Elasticity_c
-        index: 65
-      - nameId: Friction_c
-        index: 43
-      - nameId: LifetimeLoss_c
-        index: 51
-      - nameId: Sphere_center_d
-        index: 45
-      - nameId: Sphere_radius_d
-        index: 47
-      - nameId: Elasticity_d
-        index: 49
-      - nameId: Friction_d
-        index: 52
-      - nameId: LifetimeLoss_d
-        index: 50
+        index: 21
       params: []
       processor: {fileID: 0}
       shaderSourceIndex: 1
@@ -2554,7 +2169,7 @@ VisualEffectResource:
       temporaryBuffers: []
       values:
       - nameId: localToWorld
-        index: 78
+        index: 30
       params: []
       processor: {fileID: 0}
       shaderSourceIndex: 3
@@ -2569,13 +2184,11 @@ VisualEffectResource:
       temporaryBuffers: []
       values:
       - nameId: Size_b
-        index: 48
+        index: 5
       - nameId: gradient_c
-        index: 46
-      - nameId: invSoftParticlesFadeDistance
-        index: 44
+        index: 4
       - nameId: mainTexture
-        index: 72
+        index: 14
       params:
       - nameId: sortPriority
         index: 0
@@ -6077,7 +5690,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 2.04
+      m_SerializableObject: 2
     m_Space: 2147483647
   m_Property:
     name: A
