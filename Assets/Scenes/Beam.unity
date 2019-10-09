@@ -169,9 +169,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
-  far clip plane: 1000
-  field of view: 60
+  near clip plane: 0.01
+  far clip plane: 1002.9
+  field of view: 84.3
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -196,8 +196,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 375980307}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0.20416999, y: -0.4468257, z: 0.105517484, w: 0.8645967}
+  m_LocalPosition: {x: 20.999916, y: 12.010795, z: -9.342653}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -282,7 +282,7 @@ VisualEffect:
       - m_Value: {x: -0, y: 0, z: 0}
         m_Name: DragField_angles
         m_Overridden: 1
-      - m_Value: {x: 0, y: -0.16336, z: 2.31}
+      - m_Value: {x: 0, y: -1.32, z: 23.02}
         m_Name: DragField_position
         m_Overridden: 1
       - m_Value: {x: 1, y: 1, z: 1}
@@ -312,8 +312,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1719769651}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.16336, z: 2.31}
-  m_LocalScale: {x: 3.1334, y: 3.1334, z: 3.1334}
+  m_LocalPosition: {x: 0, y: -1.32, z: 5.67}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1789329580}
   m_Father: {fileID: 0}
@@ -374,7 +374,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1789329579}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 17.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1719769654}
