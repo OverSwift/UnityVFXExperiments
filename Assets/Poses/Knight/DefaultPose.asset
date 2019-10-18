@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae0543fe805424df99fe08ce744cbe49, type: 3}
+  m_Name: DefaultPose
+  m_EditorClassIdentifier: 
+  m_PoseEntries:
+  - path: Bones/Hips
+    localPosition: {x: 0.13969144, y: -1.3689733, z: 1.7523617}
+    localRotation: {x: -0.0023500947, y: 0.0023530142, z: 0.72222704, w: 0.6916481}
+    localScale: {x: 1, y: 1, z: 1}
+  - path: Bones/Hips/Left Leg
+    localPosition: {x: -0.03434865, y: 0.22540146, z: -0.00022874122}
+    localRotation: {x: 0, y: 0, z: 0.99910474, w: 0.042305052}
+    localScale: {x: 1, y: 1, z: 1}
+  - path: Bones/Hips/Right Leg
+    localPosition: {x: -0.049581047, y: -0.22423702, z: -0.0003301797}
+    localRotation: {x: -1.2465255e-10, y: -2.2852654e-10, z: 0.9999262, w: -0.012150821}
+    localScale: {x: 1, y: 1, z: 1}
+  - path: Bones/Hips/Chest
+    localPosition: {x: 0.30328107, y: -0.000000029802322, z: 0.00014330202}
+    localRotation: {x: 0, y: 0, z: -0.044874836, w: 0.9989926}
+    localScale: {x: 1, y: 1, z: 1}
+  - path: Bones/Hips/Chest/Left Top Arm
+    localPosition: {x: 0.21413787, y: 0.39734545, z: -0.00051279156}
+    localRotation: {x: 0, y: 0, z: 0.99234724, w: 0.1234788}
+    localScale: {x: 1, y: 1, z: 1}
+  - path: Bones/Hips/Chest/Left Top Arm/Bottom Arm
+    localPosition: {x: 0.3299999, y: -0.000000052154064, z: 0.000000032464072}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    localScale: {x: 1, y: 1, z: 1}
+  - path: Bones/Hips/Chest/Right Top Arm
+    localPosition: {x: 0.18346913, y: -0.3934126, z: -0.00066405814}
+    localRotation: {x: 0, y: 0, z: -0.9894152, w: 0.14511198}
+    localScale: {x: 1, y: 1, z: 1}
+  - path: Bones/Hips/Chest/Right Top Arm/Bottom Arm
+    localPosition: {x: 0.32672718, y: 0.000000044703484, z: 0.00021263454}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    localScale: {x: 1, y: 1, z: 1}
+  - path: Bones/Hips/Chest/Head
+    localPosition: {x: 0.35662016, y: 0.00000000777618, z: 0.0009100019}
+    localRotation: {x: 0, y: 0, z: 0.04088168, w: 0.99916404}
+    localScale: {x: 1, y: 1, z: 1}
