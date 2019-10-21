@@ -33,9 +33,12 @@ public class KnightController : MonoBehaviour
         _controls.KnightInput.Move.performed += HandleMove;
         _controls.KnightInput.Jump.performed += HandleJump;
         _controls.KnightInput.Run.performed += HandleRun;
+        _controls.KnightInput.SpinAttack.performed += HandleSkill;
+
         _controls.KnightInput.Move.Enable();
         _controls.KnightInput.Jump.Enable();
         _controls.KnightInput.Run.Enable();
+        _controls.KnightInput.SpinAttack.Enable();
     }
 
     /// <summary>
@@ -46,7 +49,9 @@ public class KnightController : MonoBehaviour
         _controls.KnightInput.Move.performed -= HandleMove;
         _controls.KnightInput.Jump.performed -= HandleJump;
         _controls.KnightInput.Run.performed -= HandleRun;
+        _controls.KnightInput.SpinAttack.performed -= HandleSkill;
 
+        _controls.KnightInput.SpinAttack.Disable();
         _controls.KnightInput.Run.Disable();
         _controls.KnightInput.Move.Disable();
         _controls.KnightInput.Jump.Disable();
@@ -63,20 +68,20 @@ public class KnightController : MonoBehaviour
     void Update()
     {
 
-        float limit = isRunning ? runSpeed : walkSpeed;
-        float acceleration =  isRunning ? (horizontalAcceleration * 2) : horizontalAcceleration;
+        // float limit = isRunning ? runSpeed : walkSpeed;
+        // float acceleration =  isRunning ? (horizontalAcceleration * 2) : horizontalAcceleration;
 
 
-        float moveSpeed = _rigidBody.velocity.x + acceleration * moveDirection * Time.deltaTime;
-        moveSpeed = Mathf.Clamp(moveSpeed, (limit * -1), limit);
+        // float moveSpeed = _rigidBody.velocity.x + acceleration * moveDirection * Time.deltaTime;
+        // moveSpeed = Mathf.Clamp(moveSpeed, (limit * -1), limit);
 
-        if (moveSpeed > 0) {
-            transform.rotation = new Quaternion(transform.rotation.x, 0, transform.rotation.z, transform.rotation.w);
-        } else if (moveSpeed < 0) {
-            transform.rotation = new Quaternion(transform.rotation.x, 180, transform.rotation.z, transform.rotation.w);
-        }
-        Debug.Log(moveSpeed);
-        _rigidBody.velocity = new Vector2(moveSpeed, _rigidBody.velocity.y);
+        // if (moveSpeed > 0) {
+        //     transform.rotation = new Quaternion(transform.rotation.x, 0, transform.rotation.z, transform.rotation.w);
+        // } else if (moveSpeed < 0) {
+        //     transform.rotation = new Quaternion(transform.rotation.x, 180, transform.rotation.z, transform.rotation.w);
+        // }
+        // Debug.Log(moveSpeed);
+        // _rigidBody.velocity = new Vector2(moveSpeed, _rigidBody.velocity.y);
     }
 
     private void FixedUpdate() {
@@ -91,6 +96,11 @@ public class KnightController : MonoBehaviour
         _animator.SetFloat("Speed", Mathf.Abs(_rigidBody.velocity.x));        
     }
 
+    // private void OnAnimatorMove() {
+    //     Debug.Log("Animator move");
+    //     _animator.ApplyBuiltinRootMotion();
+    // }
+
     private void HandleMove(InputAction.CallbackContext context) {
         float moveValue = context.ReadValue<float>();
         moveDirection = moveValue;
@@ -99,6 +109,10 @@ public class KnightController : MonoBehaviour
     private void HandleJump(InputAction.CallbackContext context) {
         Debug.Log("Jump");
         jump = true;
+    }
+
+    private void HandleSkill(InputAction.CallbackContext context) {
+        _animator.SetTrigger("OnSkill");
     }
 
     private void HandleRun(InputAction.CallbackContext context) {

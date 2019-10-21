@@ -41,6 +41,14 @@ public class PlayerInput : IInputActionCollection, IDisposable
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": ""Press(behavior=2)""
+                },
+                {
+                    ""name"": ""SpinAttack"",
+                    ""type"": ""Button"",
+                    ""id"": ""3fb59e19-baaa-40b8-bcc6-dce0597f0450"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Press""
                 }
             ],
             ""bindings"": [
@@ -98,6 +106,17 @@ public class PlayerInput : IInputActionCollection, IDisposable
                     ""action"": ""Run"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2a354b11-9128-4403-9fd2-0eb0480d0829"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SpinAttack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -109,6 +128,7 @@ public class PlayerInput : IInputActionCollection, IDisposable
         m_KnightInput_Move = m_KnightInput.FindAction("Move", throwIfNotFound: true);
         m_KnightInput_Jump = m_KnightInput.FindAction("Jump", throwIfNotFound: true);
         m_KnightInput_Run = m_KnightInput.FindAction("Run", throwIfNotFound: true);
+        m_KnightInput_SpinAttack = m_KnightInput.FindAction("SpinAttack", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -161,6 +181,7 @@ public class PlayerInput : IInputActionCollection, IDisposable
     private readonly InputAction m_KnightInput_Move;
     private readonly InputAction m_KnightInput_Jump;
     private readonly InputAction m_KnightInput_Run;
+    private readonly InputAction m_KnightInput_SpinAttack;
     public struct KnightInputActions
     {
         private PlayerInput m_Wrapper;
@@ -168,6 +189,7 @@ public class PlayerInput : IInputActionCollection, IDisposable
         public InputAction @Move => m_Wrapper.m_KnightInput_Move;
         public InputAction @Jump => m_Wrapper.m_KnightInput_Jump;
         public InputAction @Run => m_Wrapper.m_KnightInput_Run;
+        public InputAction @SpinAttack => m_Wrapper.m_KnightInput_SpinAttack;
         public InputActionMap Get() { return m_Wrapper.m_KnightInput; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -186,6 +208,9 @@ public class PlayerInput : IInputActionCollection, IDisposable
                 Run.started -= m_Wrapper.m_KnightInputActionsCallbackInterface.OnRun;
                 Run.performed -= m_Wrapper.m_KnightInputActionsCallbackInterface.OnRun;
                 Run.canceled -= m_Wrapper.m_KnightInputActionsCallbackInterface.OnRun;
+                SpinAttack.started -= m_Wrapper.m_KnightInputActionsCallbackInterface.OnSpinAttack;
+                SpinAttack.performed -= m_Wrapper.m_KnightInputActionsCallbackInterface.OnSpinAttack;
+                SpinAttack.canceled -= m_Wrapper.m_KnightInputActionsCallbackInterface.OnSpinAttack;
             }
             m_Wrapper.m_KnightInputActionsCallbackInterface = instance;
             if (instance != null)
@@ -199,6 +224,9 @@ public class PlayerInput : IInputActionCollection, IDisposable
                 Run.started += instance.OnRun;
                 Run.performed += instance.OnRun;
                 Run.canceled += instance.OnRun;
+                SpinAttack.started += instance.OnSpinAttack;
+                SpinAttack.performed += instance.OnSpinAttack;
+                SpinAttack.canceled += instance.OnSpinAttack;
             }
         }
     }
@@ -208,5 +236,6 @@ public class PlayerInput : IInputActionCollection, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnRun(InputAction.CallbackContext context);
+        void OnSpinAttack(InputAction.CallbackContext context);
     }
 }
