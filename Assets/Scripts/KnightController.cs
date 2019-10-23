@@ -62,44 +62,74 @@ public class KnightController : MonoBehaviour
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>(); 
+        // _animator.applyRootMotion = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        // float limit = isRunning ? runSpeed : walkSpeed;
-        // float acceleration =  isRunning ? (horizontalAcceleration * 2) : horizontalAcceleration;
-
-
-        // float moveSpeed = _rigidBody.velocity.x + acceleration * moveDirection * Time.deltaTime;
-        // moveSpeed = Mathf.Clamp(moveSpeed, (limit * -1), limit);
-
-        // if (moveSpeed > 0) {
-        //     transform.rotation = new Quaternion(transform.rotation.x, 0, transform.rotation.z, transform.rotation.w);
-        // } else if (moveSpeed < 0) {
-        //     transform.rotation = new Quaternion(transform.rotation.x, 180, transform.rotation.z, transform.rotation.w);
-        // }
-        // Debug.Log(moveSpeed);
-        // _rigidBody.velocity = new Vector2(moveSpeed, _rigidBody.velocity.y);
+        
     }
 
+    Vector3 forwardVector = new Vector3(1, 1, 1);
+    Vector3 backwardVector = new Vector3(-1, 1, 1);
+
+    Vector3 oldFaceDirection = Vector3.zero;
     private void FixedUpdate() {
+
+        if (moveDirection > 0) {
+            transform.localScale = forwardVector;
+        } else if (moveDirection < 0) {
+            transform.localScale = backwardVector;
+        }
+
+        if (oldFaceDirection != transform.localScale) {
+            _rigidBody.velocity += (_rigidBody.velocity * -1) * 2;
+        }
+
+        _rigidBody.position += new Vector2(deltaPos.x, deltaPos.y);
+        
+        if (transform.localScale.x == 1) {
+            _rigidBody.rotation -= deltaRotation;
+        } else {
+            _rigidBody.rotation += deltaRotation;
+        }
+
+        if (deltaRotation == 0) {
+            _rigidBody.rotation = Mathf.LerpAngle(_rigidBody.rotation, 0, 1);
+        }
+
+        // Debug.Log("Speed :" + _rigidBody.velocity.ToString());
+        _animator.SetFloat("Speed", Mathf.Abs(_rigidBody.velocity.x));        
+
         if (jump) {
-            float jumpForce = isRunning ? 100 : 50;
+            float jumpForce = 90;
             _rigidBody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
             jump = false;
         }
+
+        if (Mathf.Abs(_rigidBody.velocity.x) < walkSpeed) {
+            _rigidBody.velocity += new Vector2(moveDirection * 0.5f, 0);
+        } else if (isRunning && Mathf.Abs(_rigidBody.velocity.x) < runSpeed) {
+            _rigidBody.velocity += new Vector2(moveDirection * 1.0f, 0);
+        }
+
+        oldFaceDirection = transform.localScale;
     }
 
-    private void LateUpdate() {
-        _animator.SetFloat("Speed", Mathf.Abs(_rigidBody.velocity.x));        
-    }
+    Vector3 deltaPos = Vector3.zero;
+    float deltaRotation = 0f;
+    private void OnAnimatorMove() {
+        Debug.Log("Delta pos " + _animator.deltaPosition);
+        float angle;
+        Vector3 axis;
+        _animator.deltaRotation.ToAngleAxis(out angle, out axis);
+        // Debug.Log("Rotation angle" + angle);
 
-    // private void OnAnimatorMove() {
-    //     Debug.Log("Animator move");
-    //     _animator.ApplyBuiltinRootMotion();
-    // }
+        deltaPos = _animator.deltaPosition;
+        deltaRotation = angle;
+        // _animator.ApplyBuiltinRootMotion();
+    }
 
     private void HandleMove(InputAction.CallbackContext context) {
         float moveValue = context.ReadValue<float>();
@@ -113,10 +143,24 @@ public class KnightController : MonoBehaviour
 
     private void HandleSkill(InputAction.CallbackContext context) {
         _animator.SetTrigger("OnSkill");
+        // _rigidBody.AddForce(new Vector2(200 * transform.localScale.x ,50), ForceMode2D.Impulse);
     }
 
     private void HandleRun(InputAction.CallbackContext context) {
 
         isRunning = !isRunning;
+    }
+
+    Vector2 spinVelocity = Vector2.zero;
+    public void OnSpinStart(AnimationEvent myEvent) {
+        // _rigidBody.rotation = 100;
+        spinVelocity = new Vector2(1.5f, 0.1f);
+        _rigidBody.AddForce(new Vector2(1000, 0), ForceMode2D.Impulse);
+    }
+
+    public void OnSpinEnd(AnimationEvent myEvent) {
+        _rigidBody.rotation = 0;
+        spinVelocity = Vector2.zero;
+        // _rigidBody.velocity = new Vector2(0,0);
     }
 }
