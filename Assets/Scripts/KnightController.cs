@@ -76,60 +76,60 @@ public class KnightController : MonoBehaviour
 
     Vector3 oldFaceDirection = Vector3.zero;
     private void FixedUpdate() {
+        Debug.Log("Anim velocity: " + _animator.velocity.ToString());
+        // if (moveDirection > 0) {
+        //     transform.localScale = forwardVector;
+        // } else if (moveDirection < 0) {
+        //     transform.localScale = backwardVector;
+        // }
 
-        if (moveDirection > 0) {
-            transform.localScale = forwardVector;
-        } else if (moveDirection < 0) {
-            transform.localScale = backwardVector;
-        }
+        // if (oldFaceDirection != transform.localScale) {
+        //     _rigidBody.velocity += (_rigidBody.velocity * -1) * 2;
+        // }
 
-        if (oldFaceDirection != transform.localScale) {
-            _rigidBody.velocity += (_rigidBody.velocity * -1) * 2;
-        }
-
-        _rigidBody.position += new Vector2(deltaPos.x, deltaPos.y);
+        // _rigidBody.position += new Vector2(deltaPos.x, deltaPos.y);
         
-        if (transform.localScale.x == 1) {
-            _rigidBody.rotation -= deltaRotation;
-        } else {
-            _rigidBody.rotation += deltaRotation;
-        }
+        // if (transform.localScale.x == 1) {
+        //     _rigidBody.rotation -= deltaRotation;
+        // } else {
+        //     _rigidBody.rotation += deltaRotation;
+        // }
 
-        if (deltaRotation == 0) {
-            _rigidBody.rotation = Mathf.LerpAngle(_rigidBody.rotation, 0, 1);
-        }
+        // if (deltaRotation == 0) {
+        //     _rigidBody.rotation = Mathf.LerpAngle(_rigidBody.rotation, 0, 1);
+        // }
 
-        // Debug.Log("Speed :" + _rigidBody.velocity.ToString());
-        _animator.SetFloat("Speed", Mathf.Abs(_rigidBody.velocity.x));        
+        // // Debug.Log("Speed :" + _rigidBody.velocity.ToString());
+        // _animator.SetFloat("Speed", Mathf.Abs(_rigidBody.velocity.x));        
 
-        if (jump) {
-            float jumpForce = 90;
-            _rigidBody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
-            jump = false;
-        }
+        // if (jump) {
+        //     float jumpForce = 90;
+        //     _rigidBody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+        //     jump = false;
+        // }
 
-        if (Mathf.Abs(_rigidBody.velocity.x) < walkSpeed) {
-            _rigidBody.velocity += new Vector2(moveDirection * 0.5f, 0);
-        } else if (isRunning && Mathf.Abs(_rigidBody.velocity.x) < runSpeed) {
-            _rigidBody.velocity += new Vector2(moveDirection * 1.0f, 0);
-        }
+        // if (Mathf.Abs(_rigidBody.velocity.x) < walkSpeed) {
+        //     _rigidBody.velocity += new Vector2(moveDirection * 0.5f, 0);
+        // } else if (isRunning && Mathf.Abs(_rigidBody.velocity.x) < runSpeed) {
+        //     _rigidBody.velocity += new Vector2(moveDirection * 1.0f, 0);
+        // }
 
-        oldFaceDirection = transform.localScale;
+        // oldFaceDirection = transform.localScale;
     }
 
     Vector3 deltaPos = Vector3.zero;
     float deltaRotation = 0f;
-    private void OnAnimatorMove() {
-        Debug.Log("Delta pos " + _animator.deltaPosition);
-        float angle;
-        Vector3 axis;
-        _animator.deltaRotation.ToAngleAxis(out angle, out axis);
-        // Debug.Log("Rotation angle" + angle);
+    // private void OnAnimatorMove() {
+    //     Debug.Log("Delta pos " + _animator.deltaPosition);
+    //     float angle;
+    //     Vector3 axis;
+    //     _animator.deltaRotation.ToAngleAxis(out angle, out axis);
+    //     // Debug.Log("Rotation angle" + angle);
 
-        deltaPos = _animator.deltaPosition;
-        deltaRotation = angle;
-        // _animator.ApplyBuiltinRootMotion();
-    }
+    //     deltaPos = _animator.deltaPosition;
+    //     deltaRotation = angle;
+    //     // _animator.ApplyBuiltinRootMotion();
+    // }
 
     private void HandleMove(InputAction.CallbackContext context) {
         float moveValue = context.ReadValue<float>();
