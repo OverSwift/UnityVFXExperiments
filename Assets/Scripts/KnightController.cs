@@ -62,13 +62,6 @@ public class KnightController : MonoBehaviour
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>(); 
-        // _animator.applyRootMotion = true;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     Vector3 forwardVector = new Vector3(1, 1, 1);
@@ -77,15 +70,15 @@ public class KnightController : MonoBehaviour
     Vector3 oldFaceDirection = Vector3.zero;
     private void FixedUpdate() {
         Debug.Log("Anim velocity: " + _animator.velocity.ToString());
-        // if (moveDirection > 0) {
-        //     transform.localScale = forwardVector;
-        // } else if (moveDirection < 0) {
-        //     transform.localScale = backwardVector;
-        // }
+        if (moveDirection > 0) {
+            transform.localScale = forwardVector;
+        } else if (moveDirection < 0) {
+            transform.localScale = backwardVector;
+        }
 
-        // if (oldFaceDirection != transform.localScale) {
-        //     _rigidBody.velocity += (_rigidBody.velocity * -1) * 2;
-        // }
+        if (oldFaceDirection != transform.localScale) {
+            _rigidBody.velocity += new Vector2((_rigidBody.velocity.x * -1) * 2, 0);
+        }
 
         // _rigidBody.position += new Vector2(deltaPos.x, deltaPos.y);
         
@@ -100,25 +93,27 @@ public class KnightController : MonoBehaviour
         // }
 
         // // Debug.Log("Speed :" + _rigidBody.velocity.ToString());
-        // _animator.SetFloat("Speed", Mathf.Abs(_rigidBody.velocity.x));        
+        _animator.SetFloat("Speed", Mathf.Abs(_rigidBody.velocity.x));        
 
-        // if (jump) {
-        //     float jumpForce = 90;
-        //     _rigidBody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
-        //     jump = false;
-        // }
+        if (jump) {
+            float jumpForce = 90;
+            _rigidBody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+            jump = false;
+        }
 
-        // if (Mathf.Abs(_rigidBody.velocity.x) < walkSpeed) {
-        //     _rigidBody.velocity += new Vector2(moveDirection * 0.5f, 0);
-        // } else if (isRunning && Mathf.Abs(_rigidBody.velocity.x) < runSpeed) {
-        //     _rigidBody.velocity += new Vector2(moveDirection * 1.0f, 0);
-        // }
+        if (Mathf.Abs(_rigidBody.velocity.x) < walkSpeed) {
+            // _rigidBody.velocity += new Vector2(moveDirection * walkSpeed, 0);
+            _rigidBody.AddForce(new Vector2(walkSpeed * moveDirection, 0),ForceMode2D.Force);
+            Debug.Log("Walk");
+        }
+        if (isRunning && Mathf.Abs(_rigidBody.velocity.x) < runSpeed) {
+            // _rigidBody.velocity += new Vector2(moveDirection * runSpeed, 0);
+            _rigidBody.AddForce(new Vector2(runSpeed * moveDirection, 0),ForceMode2D.Force);
+        }
 
-        // oldFaceDirection = transform.localScale;
+        oldFaceDirection = transform.localScale;
     }
 
-    Vector3 deltaPos = Vector3.zero;
-    float deltaRotation = 0f;
     // private void OnAnimatorMove() {
     //     Debug.Log("Delta pos " + _animator.deltaPosition);
     //     float angle;
@@ -147,20 +142,6 @@ public class KnightController : MonoBehaviour
     }
 
     private void HandleRun(InputAction.CallbackContext context) {
-
         isRunning = !isRunning;
-    }
-
-    Vector2 spinVelocity = Vector2.zero;
-    public void OnSpinStart(AnimationEvent myEvent) {
-        // _rigidBody.rotation = 100;
-        spinVelocity = new Vector2(1.5f, 0.1f);
-        _rigidBody.AddForce(new Vector2(1000, 0), ForceMode2D.Impulse);
-    }
-
-    public void OnSpinEnd(AnimationEvent myEvent) {
-        _rigidBody.rotation = 0;
-        spinVelocity = Vector2.zero;
-        // _rigidBody.velocity = new Vector2(0,0);
     }
 }
