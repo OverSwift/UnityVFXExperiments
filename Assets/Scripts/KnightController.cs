@@ -22,6 +22,8 @@ public class KnightController : MonoBehaviour
     private Rigidbody2D _rigidBody;
     private Animator _animator;
 
+    private GroundControl _groundControl;
+
     /// <summary>
     /// Awake is called when the script instance is being loaded.
     /// </summary>
@@ -62,6 +64,8 @@ public class KnightController : MonoBehaviour
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>(); 
+        _groundControl = GetComponentInChildren<GroundControl>();
+        _groundControl._animator = _animator;
     }
 
     Vector3 forwardVector = new Vector3(1, 1, 1);
@@ -95,7 +99,7 @@ public class KnightController : MonoBehaviour
         // // Debug.Log("Speed :" + _rigidBody.velocity.ToString());
         _animator.SetFloat("Speed", Mathf.Abs(_rigidBody.velocity.x));        
 
-        if (jump) {
+        if (jump && _groundControl.isGrounded) {
             float jumpForce = 90;
             _rigidBody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
             jump = false;
@@ -138,6 +142,7 @@ public class KnightController : MonoBehaviour
 
     private void HandleSkill(InputAction.CallbackContext context) {
         _animator.SetTrigger("OnSkill");
+        Debug.Log("Skill !!!");
         // _rigidBody.AddForce(new Vector2(200 * transform.localScale.x ,50), ForceMode2D.Impulse);
     }
 
